@@ -1,0 +1,32 @@
+import jdk.javadoc.internal.Versions
+
+plugins {
+    id 'java'
+}
+
+group = 'ru.baldenna'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group = 'ru.baldenna'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(project(":unleash-agent-core"))
+    implementation "commons-cli:commons-cli:${Versions.cliLib}"
+
+    testImplementation platform("org.junit:junit-bom:${Versions.junit}")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+jar {
+//    dependsOn project(':unleash-agent-core')
+    dependsOn ':unleash-agent-core:build'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(
+                'Main-Class': 'ru.baldenna.unleashagent.cli.UnleashAgentCli'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
+test {
+    useJUnitPlatform()
+}

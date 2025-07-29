@@ -1,0 +1,6 @@
+projects:
+  default:
+    features:
+      - name: test-feature
+        type: release
+        description: This is feature for test feature creation

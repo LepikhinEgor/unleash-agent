@@ -1,0 +1,141 @@
+tags:
+  - value: test3
+    type: simple
+  - value: test5
+    type: simple
+  - value: test7
+    type: simple
+  - value: newTag
+    type: simple
+  - value: obip
+    type: simple
+  - value: test1
+    type: simple
+  - value: beta
+    type: simple
+segments:
+  - name: "beta-testers"
+    description: "Beta testers which test unreleased features"
+    constraints:
+      - contextName: "userId"
+        operator: "IN"
+        caseInsensitive: true
+        inverted: false
+        values:
+          - "user1"
+          - "user2"
+          - "user3"
+          - "user4"
+          - "user5"
+      - contextName: "environment"
+        operator: "NOT_IN"
+        caseInsensitive: true
+        inverted: true
+        values:
+          - "test1"
+          - "test2"
+contextFields:
+   - name: customerType
+     description: Customer type
+     stickiness: false
+     sortOrder: 1
+     legalValues:
+       - { value: FL, description: Physical }
+       - { value: UL, description: Company }
+       - { value: IP, description: Individual entrepreneur }
+       - { value: NOT_CLIENT, description: Not client }
+projects:
+  default:
+    environments:
+       - name: development
+         featureStrategies:
+           test-automation:
+              - name: flexibleRollout
+                constraints: [ ]
+                parameters:
+                  rollout: "100"
+                  stickiness: "default"
+                  groupId: "feature78"
+                variants:
+                  - stickiness: "default"
+                    name: "variant1"
+                    weight: 333
+                    payload:
+                      type: "string"
+                      value: "testFirst"
+                    weightType: "variable"
+                  - stickiness: "default"
+                    name: "variant2"
+                    weight: 334
+                    payload:
+                      type: "string"
+                      value: "testSecond"
+                    weightType: "variable"
+                  - stickiness: "default"
+                    name: "variant3"
+                    weight: 333
+                    payload:
+                      type: "string"
+                      value: "testThird"
+                    weightType: "variable"
+                segments:
+                  - 4
+                disabled: false
+           feature2:
+              - name: flexibleRollout
+                title: null
+                constraints:
+                  - values:
+                      - "123"
+                    inverted: false
+                    operator: IN
+                    contextName: appName
+                    caseInsensitive: false
+                parameters:
+                  rollout: "100"
+                  stickiness: "default"
+                  groupId: "feature78"
+                variants: [ ]
+                segments:
+                  - 4
+                disabled: false
+    features:
+      - name: test-automation
+        type: release
+        description: This is feature for test feature creation
+        tags:
+          - value: beta
+            type: simple
+      - name: feature2
+        type: release
+        description: This is feature 2
+        tags:
+          - value: obip
+            type: simple
+      - name: feature32
+        type: release
+        description: This is feature 3
+        tags:
+          - value: test3
+            type: simple
+      - name: feature4
+        type: release
+        description: This is feature ff
+        tags:
+          - value: test1
+            type: simple
+      - name: feature5
+        type: release
+        description: This is feature ffff33
+        tags:
+          - value: test1
+            type: simple
+      - name: feature6
+        type: experiment
+        description: This is feature ffffffff
+      - name: feature78
+        type: experiment
+        description: This is feature semm
+        tags:
+          - value: newTag
+            type: simple
