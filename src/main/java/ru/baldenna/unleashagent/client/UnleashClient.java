@@ -1,0 +1,59 @@
+package ru.baldenna.unleashagent.client;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.baldenna.unleashagent.config.FeignConfig;
+import ru.baldenna.unleashagent.dto.CreateFeatureDto;
+import ru.baldenna.unleashagent.dto.FeaturesResponse;
+import ru.baldenna.unleashagent.dto.LoginRequest;
+import ru.baldenna.unleashagent.dto.UpdateFeatureDto;
+import ru.baldenna.unleashagent.dto.UserDTO;
+
+@FeignClient(name = "unleash-client", url = "http://unleash.cbclusterint.alfaintra.net/", configuration = FeignConfig.class)
+public interface UnleashClient {
+
+    @PostMapping(value = "/auth/simple/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<UserDTO> login(@RequestBody LoginRequest loginRequest);
+
+    @PostMapping(value = "api/admin/projects/{projectId}/features", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    String createFeature(
+            @PathVariable("projectId") String projectId,
+            @RequestBody CreateFeatureDto createFeatureDto,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+
+    @GetMapping(value = "/api/admin/search/features", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<FeaturesResponse> getFeatures(
+            @RequestParam("limit") int limit,
+            @RequestParam("project") String project,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+
+    @DeleteMapping(value = "/api/admin/projects/{projectId}/features/{featureName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> archiveFeature(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("featureName") String featureName,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+        @PutMapping(value = "/api/admin/projects/{projectId}/features/{featureName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+        ResponseEntity<Void> updateFeature(
+                @PathVariable("projectId") String projectId,
+                @PathVariable("featureName") String featureName,
+                @RequestBody UpdateFeatureDto dto,
+                @CookieValue("unleash-session") String sessionCookie
+        );
+
+
+}
