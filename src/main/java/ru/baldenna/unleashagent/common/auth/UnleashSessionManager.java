@@ -1,14 +1,10 @@
-package ru.baldenna.unleashagent.service;
+package ru.baldenna.unleashagent.common.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.baldenna.unleashagent.client.UnleashClient;
-import ru.baldenna.unleashagent.dto.ConfigurationState;
-import ru.baldenna.unleashagent.dto.LoginRequest;
-import ru.baldenna.unleashagent.dto.UserDTO;
 
 import java.util.Objects;
 

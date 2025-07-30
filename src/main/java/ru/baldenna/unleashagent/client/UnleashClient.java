@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.baldenna.unleashagent.config.FeignConfig;
-import ru.baldenna.unleashagent.dto.CreateFeatureDto;
-import ru.baldenna.unleashagent.dto.FeaturesResponse;
-import ru.baldenna.unleashagent.dto.LoginRequest;
-import ru.baldenna.unleashagent.dto.Tag;
-import ru.baldenna.unleashagent.dto.TagListResponse;
-import ru.baldenna.unleashagent.dto.UpdateFeatureDto;
-import ru.baldenna.unleashagent.dto.UserDTO;
+import ru.baldenna.unleashagent.common.config.FeignConfig;
+import ru.baldenna.unleashagent.features.CreateFeatureDto;
+import ru.baldenna.unleashagent.features.FeaturesResponse;
+import ru.baldenna.unleashagent.common.auth.LoginRequest;
+import ru.baldenna.unleashagent.tags.Tag;
+import ru.baldenna.unleashagent.tags.TagListResponse;
+import ru.baldenna.unleashagent.features.UpdateFeatureDto;
+import ru.baldenna.unleashagent.common.auth.UserDTO;
 
 @FeignClient(name = "unleash-client", url = "http://unleash.cbclusterint.alfaintra.net/", configuration = FeignConfig.class)
 public interface UnleashClient {

@@ -1,4 +1,6 @@
-package ru.baldenna.unleashagent.dto;
+package ru.baldenna.unleashagent.features;
+
+import ru.baldenna.unleashagent.tags.Tag;
 
 import java.util.HashSet;
 

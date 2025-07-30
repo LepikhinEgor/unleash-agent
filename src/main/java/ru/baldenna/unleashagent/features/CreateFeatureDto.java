@@ -1,8 +1,9 @@
-package ru.baldenna.unleashagent.dto;
+package ru.baldenna.unleashagent.features;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import ru.baldenna.unleashagent.tags.Tag;
 
 import java.util.HashSet;
 import java.util.Objects;

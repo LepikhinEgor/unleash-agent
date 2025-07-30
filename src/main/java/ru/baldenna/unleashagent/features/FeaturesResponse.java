@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.dto;
+package ru.baldenna.unleashagent.features;
 
 
 import java.util.List;

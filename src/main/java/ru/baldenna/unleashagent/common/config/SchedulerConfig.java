@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.config;
+package ru.baldenna.unleashagent.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

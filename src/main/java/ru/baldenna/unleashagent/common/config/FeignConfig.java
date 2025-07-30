@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.config;
+package ru.baldenna.unleashagent.common.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;

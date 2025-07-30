@@ -17,6 +17,8 @@ unleash:
       type: simple
     - value: blabla
       type: simple
+    - value: newTag
+      type: simple
   features:
     - name: test-automation
       type: release
@@ -49,6 +51,12 @@ unleash:
         - value: test1
           type: simple
     - name: feature6
-      type: experiment
+      type: release
       description: This is feature ffffffff
+    - name: feature7
+      type: experiment
+      description: This is feature semm
+      tags:
+        - value: newTag
+          type: simple
 

@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.dto;
+package ru.baldenna.unleashagent.common.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
