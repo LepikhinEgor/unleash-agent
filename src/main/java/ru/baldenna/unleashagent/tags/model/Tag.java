@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.tags;
+package ru.baldenna.unleashagent.tags.model;
 
 
 public record Tag (

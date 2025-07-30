@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.features;
+package ru.baldenna.unleashagent.features.model;
 
 
 import java.util.List;

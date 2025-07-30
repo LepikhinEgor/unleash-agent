@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.baldenna.unleashagent.common.config.FeignConfig;
-import ru.baldenna.unleashagent.features.CreateFeatureDto;
-import ru.baldenna.unleashagent.features.FeaturesResponse;
+import ru.baldenna.unleashagent.features.model.CreateFeatureDto;
+import ru.baldenna.unleashagent.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.common.auth.LoginRequest;
-import ru.baldenna.unleashagent.tags.Tag;
-import ru.baldenna.unleashagent.tags.TagListResponse;
-import ru.baldenna.unleashagent.features.UpdateFeatureDto;
+import ru.baldenna.unleashagent.tags.model.Tag;
+import ru.baldenna.unleashagent.tags.model.TagListResponse;
+import ru.baldenna.unleashagent.features.model.UpdateFeatureDto;
 import ru.baldenna.unleashagent.common.auth.UserDTO;
 
 @FeignClient(name = "unleash-client", url = "http://unleash.cbclusterint.alfaintra.net/", configuration = FeignConfig.class)
@@ -77,6 +77,21 @@ public interface UnleashClient {
 
     @GetMapping(value = "/api/admin/tag-types", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<String> getTagTypes(
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+    @PostMapping(value = "/api/admin/features/{featureName}/tags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> addTagToFeature(
+            @PathVariable("featureName") String featureName,
+            @RequestBody Tag tagRequest,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+    @DeleteMapping(value = "/api/admin/features/{featureName}/tags/{type}/{value}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> deleteTagFromFeature(
+            @PathVariable("featureName") String featureName,
+            @PathVariable("value") String value,
+            @PathVariable("type") String type,
             @CookieValue("unleash-session") String sessionCookie
     );
 

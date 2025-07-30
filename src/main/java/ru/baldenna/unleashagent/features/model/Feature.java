@@ -1,6 +1,6 @@
-package ru.baldenna.unleashagent.features;
+package ru.baldenna.unleashagent.features.model;
 
-import ru.baldenna.unleashagent.tags.Tag;
+import ru.baldenna.unleashagent.tags.model.Tag;
 
 import java.util.HashSet;
 
@@ -19,4 +19,9 @@ public record Feature(
          FeatureLifecycle lifecycle,
          HashSet<Tag> tags
 ) {
+
+    @Override
+    public HashSet<Tag> tags() {
+        return tags == null? new HashSet<>() : tags;
+    }
 }

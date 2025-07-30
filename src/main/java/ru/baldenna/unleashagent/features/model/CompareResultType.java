@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.features;
+package ru.baldenna.unleashagent.features.model;
 
 public enum CompareResultType {
     EQUAL,

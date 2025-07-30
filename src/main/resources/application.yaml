@@ -1,10 +1,6 @@
 spring:
   application:
     name: unleash-agent
-#logging:
-#  level:
-#    org.springframework.cloud.openfeign: TRACE
-#    ru.baldenna.unleashagent.client.UnleashClient: TRACE
 
 
 unleash:
@@ -15,9 +11,13 @@ unleash:
       type: simple
     - value: test7
       type: simple
-    - value: blabla
-      type: simple
     - value: newTag
+      type: simple
+    - value: obip
+      type: simple
+    - value: test1
+      type: simple
+    - value: beta
       type: simple
   features:
     - name: test-automation
@@ -46,14 +46,14 @@ unleash:
           type: simple
     - name: feature5
       type: release
-      description: This is feature ffff
+      description: This is feature ffff33
       tags:
         - value: test1
           type: simple
     - name: feature6
-      type: release
+      type: experiment
       description: This is feature ffffffff
-    - name: feature7
+    - name: feature78
       type: experiment
       description: This is feature semm
       tags:
