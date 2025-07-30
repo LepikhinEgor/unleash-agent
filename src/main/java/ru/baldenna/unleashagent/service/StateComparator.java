@@ -2,13 +2,16 @@ package ru.baldenna.unleashagent.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.baldenna.unleashagent.dto.ChangeStateActions;
+import ru.baldenna.unleashagent.dto.Tag;
+import ru.baldenna.unleashagent.dto.UpdateStateActions;
 import ru.baldenna.unleashagent.dto.CompareResult;
 import ru.baldenna.unleashagent.dto.CompareResultType;
 import ru.baldenna.unleashagent.dto.ConfigurationState;
 import ru.baldenna.unleashagent.dto.Feature;
 import ru.baldenna.unleashagent.task.CreateFeatureTask;
+import ru.baldenna.unleashagent.task.CreateTagTask;
 import ru.baldenna.unleashagent.task.DeleteFeatureTask;
+import ru.baldenna.unleashagent.task.DeleteTagTask;
 import ru.baldenna.unleashagent.task.UpdateFeatureTask;
 
 import java.util.ArrayList;
@@ -23,10 +26,32 @@ import static ru.baldenna.unleashagent.dto.CompareResultType.NOT_EQUAL;
 @Service
 public class StateComparator {
 
-    public ChangeStateActions compare(ConfigurationState local, ConfigurationState remote) {
+    public UpdateStateActions compare(ConfigurationState local, ConfigurationState remote) {
+        var tagsToCreate = new ArrayList<CreateTagTask>();
+        var tagsToDelete = new ArrayList<DeleteTagTask>();
+
         var flagsToCreate = new ArrayList<CreateFeatureTask>();
         var flagsToUpdate = new ArrayList<UpdateFeatureTask>();
         var flagsToDelete = new ArrayList<DeleteFeatureTask>();
+
+        for (Tag localTag : local.tags()) {
+            var tagAlreadyExists = remote.tags().stream()
+                    .anyMatch(remoteTag -> remoteTag.equals(localTag));
+            if (tagAlreadyExists) {
+                log.debug("Tag {}  with type {} already exists", localTag.value(), localTag.type());
+            } else {
+                log.info("Tag {} with type {} not found in Unleash and need to be created", localTag.value(), localTag.type());
+                tagsToCreate.add(new CreateTagTask(localTag.value(), localTag.type()));
+            }
+        }
+
+        for (Tag remoteTag : remote.tags()) {
+            if (local.tags().stream().noneMatch(localTag -> localTag.equals(remoteTag))) {
+                log.info("Feature {} with type {} exists in Unleash but not declared in local config. Feature will be deleted", remoteTag.value(), remoteTag.type());
+                tagsToDelete.add(new DeleteTagTask(remoteTag.value(), remoteTag.type()));
+            }
+        }
+
         for (Feature localFlag : local.features()) {
             var featureAlreadyActual = remote.features().stream().
                     map((remoteFeature) -> compareFeatures(localFlag,remoteFeature) )
@@ -62,7 +87,7 @@ public class StateComparator {
             log.info("Unleash configuration already up to date");
         }
 
-        return new ChangeStateActions(flagsToCreate, flagsToUpdate,flagsToDelete);
+        return new UpdateStateActions(tagsToCreate, tagsToDelete, flagsToCreate, flagsToUpdate,flagsToDelete);
     }
 
     private CompareResult compareFeatures(Feature local, Feature remote) {

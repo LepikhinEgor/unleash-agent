@@ -15,6 +15,8 @@ import ru.baldenna.unleashagent.config.FeignConfig;
 import ru.baldenna.unleashagent.dto.CreateFeatureDto;
 import ru.baldenna.unleashagent.dto.FeaturesResponse;
 import ru.baldenna.unleashagent.dto.LoginRequest;
+import ru.baldenna.unleashagent.dto.Tag;
+import ru.baldenna.unleashagent.dto.TagListResponse;
 import ru.baldenna.unleashagent.dto.UpdateFeatureDto;
 import ru.baldenna.unleashagent.dto.UserDTO;
 
@@ -47,13 +49,36 @@ public interface UnleashClient {
             @CookieValue("unleash-session") String sessionCookie
     );
 
-        @PutMapping(value = "/api/admin/projects/{projectId}/features/{featureName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-        ResponseEntity<Void> updateFeature(
-                @PathVariable("projectId") String projectId,
-                @PathVariable("featureName") String featureName,
-                @RequestBody UpdateFeatureDto dto,
-                @CookieValue("unleash-session") String sessionCookie
-        );
+    @PutMapping(value = "/api/admin/projects/{projectId}/features/{featureName}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> updateFeature(
+            @PathVariable("projectId") String projectId,
+            @PathVariable("featureName") String featureName,
+            @RequestBody UpdateFeatureDto dto,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+    @GetMapping(value = "/api/admin/tags", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<TagListResponse> getTags(
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+    @DeleteMapping(value = "/api/admin/tags/{type}/{value}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> deleteTag(
+            @PathVariable("value") String value,
+            @PathVariable("type") String type,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+    @PostMapping(value = "/api/admin/tags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Void> createTag(
+            @RequestBody Tag tagRequest,
+            @CookieValue("unleash-session") String sessionCookie
+    );
+
+    @GetMapping(value = "/api/admin/tag-types", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<String> getTagTypes(
+            @CookieValue("unleash-session") String sessionCookie
+    );
 
 
 }

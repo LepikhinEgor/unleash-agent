@@ -5,15 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.baldenna.unleashagent.client.UnleashClient;
 import ru.baldenna.unleashagent.dto.CreateFeatureDto;
+import ru.baldenna.unleashagent.dto.Tag;
 import ru.baldenna.unleashagent.dto.UpdateFeatureDto;
 import ru.baldenna.unleashagent.task.CreateFeatureTask;
+import ru.baldenna.unleashagent.task.CreateTagTask;
 import ru.baldenna.unleashagent.task.DeleteFeatureTask;
+import ru.baldenna.unleashagent.task.DeleteTagTask;
 import ru.baldenna.unleashagent.task.UpdateFeatureTask;
 
 @Slf4j
 @Service
 @AllArgsConstructor
-public class StateUpdater {
+public class UnleashStateUpdater {
 
     private static final String PROJECT_NAME = "default";
 
@@ -43,5 +46,17 @@ public class StateUpdater {
         unleashClient.archiveFeature(PROJECT_NAME, deleteFeatureTask.name(), unleashSessionManager.getUnleashSessionCookie());
 
         log.info("Feature deleted: {}", deleteFeatureTask.name());
+    }
+
+    public void createTag(CreateTagTask createTagTask) {
+        unleashClient.createTag(new Tag(createTagTask.value(), createTagTask.type()), unleashSessionManager.getUnleashSessionCookie());
+
+        log.info("Tag created: {}:{}", createTagTask.type(), createTagTask.value());
+    }
+
+    public void deleteTag(DeleteTagTask deleteTagTask) {
+        unleashClient.deleteTag(deleteTagTask.value(), deleteTagTask.type(), unleashSessionManager.getUnleashSessionCookie());
+
+        log.info("Tag deleted: {}:{}", deleteTagTask.type(), deleteTagTask.value());
     }
 }

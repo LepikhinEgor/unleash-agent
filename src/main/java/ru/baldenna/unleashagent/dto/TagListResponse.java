@@ -2,7 +2,6 @@ package ru.baldenna.unleashagent.dto;
 
 import java.util.List;
 
-public record ConfigurationState (
-        List<Feature> features,
+public record TagListResponse (
         List<Tag> tags
 ) {}

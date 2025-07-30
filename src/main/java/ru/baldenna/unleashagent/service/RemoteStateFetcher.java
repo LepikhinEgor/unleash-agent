@@ -26,8 +26,10 @@ public class RemoteStateFetcher {
 
         var features = unleashClient.getFeatures(20, "IS:default", unleashSessionCookie);
 
+        var tags = unleashClient.getTags(unleashSessionCookie);
+
         log.info("Remote configuration fetched");
-        return new ConfigurationState(features.getBody().features());
+        return new ConfigurationState(features.getBody().features(), tags.getBody().tags());
     }
 
 }

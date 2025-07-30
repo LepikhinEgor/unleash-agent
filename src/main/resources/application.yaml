@@ -8,6 +8,15 @@ spring:
 
 
 unleash:
+  tags:
+    - value: test3
+      type: simple
+    - value: test5
+      type: simple
+    - value: test7
+      type: simple
+    - value: blabla
+      type: simple
   features:
     - name: test-automation
       type: release
