@@ -3,7 +3,7 @@ package ru.baldenna.unleashagent.core.features.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import ru.baldenna.unleashagent.tags.model.Tag;
+import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.HashSet;
 import java.util.Objects;

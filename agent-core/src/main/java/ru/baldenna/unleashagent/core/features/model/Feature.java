@@ -1,6 +1,6 @@
 package ru.baldenna.unleashagent.core.features.model;
 
-import ru.baldenna.unleashagent.tags.model.Tag;
+import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.HashSet;
 

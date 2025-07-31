@@ -2,28 +2,26 @@ package ru.baldenna.unleashagent.core.tags;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.baldenna.unleashagent.client.UnleashClient;
-import ru.baldenna.unleashagent.common.auth.UnleashSessionManager;
-import ru.baldenna.unleashagent.common.config.UnleashConfig;
-import ru.baldenna.unleashagent.tags.model.Tag;
+import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.auth.UnleashSessionManager;
+import ru.baldenna.unleashagent.core.common.config.UnleashConfiguration;
+import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.ArrayList;
 
 @Slf4j
-@Service
 @AllArgsConstructor
 public class TagUpdater {
 
-    UnleashConfig unleashConfig;
+    UnleashConfiguration unleashConfiguration;
     UnleashClient unleashClient;
     UnleashSessionManager unleashSessionManager;
 
     public void update() {
         log.info("Check unleash tags for update");
         var remoteTags = unleashClient.getTags(unleashSessionManager.getUnleashSessionCookie())
-                .getBody().tags();
-        var localTags = unleashConfig.tags();
+                .tags();
+        var localTags = unleashConfiguration.tags();
 
         var tagsToCreate = new ArrayList<Tag>();
         var tagsToDelete = new ArrayList<Tag>();

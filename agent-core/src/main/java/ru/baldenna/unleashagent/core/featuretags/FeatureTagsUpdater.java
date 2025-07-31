@@ -2,13 +2,11 @@ package ru.baldenna.unleashagent.core.featuretags;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.baldenna.unleashagent.client.UnleashClient;
-import ru.baldenna.unleashagent.common.auth.UnleashSessionManager;
-import ru.baldenna.unleashagent.common.config.UnleashConfig;
-import ru.baldenna.unleashagent.features.model.Feature;
-import ru.baldenna.unleashagent.tags.model.Tag;
-
+import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.auth.UnleashSessionManager;
+import ru.baldenna.unleashagent.core.common.config.UnleashConfiguration;
+import ru.baldenna.unleashagent.core.features.model.Feature;
+import ru.baldenna.unleashagent.core.tags.model.Tag;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,22 +14,21 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
 @AllArgsConstructor
 public class FeatureTagsUpdater {
 
     private static final String PROJECT_NAME = "default";
 
-    final UnleashConfig unleashConfig;
+    final UnleashConfiguration unleashConfiguration;
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
     public void update() {
         log.info("Check unleash feature tags for update");
         var remoteFeaturesWithTags = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie())
-                .getBody().features().stream()
+                .features().stream()
                 .collect(Collectors.toMap(Feature::name, Feature::tags));
-        var localFeaturesWithTags = unleashConfig.features().stream()
+        var localFeaturesWithTags = unleashConfiguration.features().stream()
                 .collect(Collectors.toMap(Feature::name, Feature::tags));
 
         var featureTagsToCreate = getMissedFeatureTags(localFeaturesWithTags, remoteFeaturesWithTags);

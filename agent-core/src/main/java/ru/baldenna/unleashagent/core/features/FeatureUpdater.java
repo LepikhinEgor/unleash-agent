@@ -2,39 +2,36 @@ package ru.baldenna.unleashagent.core.features;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.baldenna.unleashagent.client.UnleashClient;
-import ru.baldenna.unleashagent.common.auth.UnleashSessionManager;
-import ru.baldenna.unleashagent.common.config.UnleashConfig;
-import ru.baldenna.unleashagent.features.model.CompareResult;
-import ru.baldenna.unleashagent.features.model.CompareResultType;
-import ru.baldenna.unleashagent.features.model.CreateFeatureDto;
-import ru.baldenna.unleashagent.features.model.Feature;
-import ru.baldenna.unleashagent.features.model.UpdateFeatureDto;
+import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.auth.UnleashSessionManager;
+import ru.baldenna.unleashagent.core.common.config.UnleashConfiguration;
+import ru.baldenna.unleashagent.core.features.model.CompareResult;
+import ru.baldenna.unleashagent.core.features.model.CompareResultType;
+import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
+import ru.baldenna.unleashagent.core.features.model.Feature;
+import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
 
 import java.util.ArrayList;
 
-import static ru.baldenna.unleashagent.features.model.CompareResultType.CHANGED;
-import static ru.baldenna.unleashagent.features.model.CompareResultType.EQUAL;
-import static ru.baldenna.unleashagent.features.model.CompareResultType.ERROR;
-import static ru.baldenna.unleashagent.features.model.CompareResultType.NOT_EQUAL;
+import static ru.baldenna.unleashagent.core.features.model.CompareResultType.CHANGED;
+import static ru.baldenna.unleashagent.core.features.model.CompareResultType.EQUAL;
+import static ru.baldenna.unleashagent.core.features.model.CompareResultType.ERROR;
+import static ru.baldenna.unleashagent.core.features.model.CompareResultType.NOT_EQUAL;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class FeatureUpdater {
 
     private static final String PROJECT_NAME = "default";
 
-    final UnleashConfig unleashConfig;
+    final UnleashConfiguration unleashConfiguration;
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
     public void update() {
         log.info("Check unleash features for update");
-        var remoteFeatuers = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie())
-                .getBody().features();
-        var localFeatures = unleashConfig.features();
+        var remoteFeatuers = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie()).features();
+        var localFeatures = unleashConfiguration.features();
 
         var flagsToCreate = new ArrayList<Feature>();
         var flagsToUpdate = new ArrayList<Feature>();

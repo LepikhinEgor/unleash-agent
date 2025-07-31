@@ -1,15 +1,13 @@
 package ru.baldenna.unleashagent.core.common.auth;
 
+import feign.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import ru.baldenna.unleashagent.client.UnleashClient;
+import ru.baldenna.unleashagent.core.client.UnleashClient;
 
 import java.util.Objects;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class UnleashSessionManager {
 
@@ -37,8 +35,8 @@ public class UnleashSessionManager {
         return unleashSessionCookie;
     }
 
-    private static String getUnleashSessionCookie(ResponseEntity<UserDTO> userResponse) {
-        return Objects.requireNonNull(userResponse.getHeaders().get("Set-Cookie")).stream()
+    private static String getUnleashSessionCookie(Response userResponse) {
+        return Objects.requireNonNull(userResponse.headers().get("Set-Cookie")).stream()
                 .filter((setCookie) -> setCookie.startsWith("unleash-session="))
                 .findFirst()
                 .map(setCookieHeader -> setCookieHeader.substring("unleash-session=".length()))
