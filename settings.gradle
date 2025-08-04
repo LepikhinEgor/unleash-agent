@@ -1,3 +1,4 @@
 rootProject.name = 'unleash-agent'
 
-include 'agent-core'
+include 'unleash-agent-core'
+include 'unleash-agent-cli'
