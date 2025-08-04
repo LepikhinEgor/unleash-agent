@@ -1,11 +1,10 @@
 package ru.baldenna.unleashagent.cli;
 
+import ru.baldenna.unleashagent.core.UnleashAgent;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
+import ru.baldenna.unleashagent.core.common.UnleashUpdatersFactory;
 import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
-import ru.baldenna.unleashagent.core.features.FeatureUpdater;
-import ru.baldenna.unleashagent.core.featuretags.FeatureTagsUpdater;
-import ru.baldenna.unleashagent.core.tags.TagUpdater;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,17 +20,17 @@ public class UnleashAgentCli {
         var yamlParser = new YamlConfigurationParser();
         var unleashClientFactory = new UnleashClientFactory();
 
-        var unleashConfig = yamlParser.parse(Files.readString(Path.of(cliArgs.configurationFilePath())));
+        String yamlConfiguration = Files.readString(Path.of(cliArgs.configurationFilePath()));
+        var newUnleashConfiguration = yamlParser.parse(yamlConfiguration);
+
         var unleashClient = unleashClientFactory.buildClient(cliArgs.unleashUrl());
         var unleashSessionManager = new UnleashSessionManager(unleashClient);
 
-        var tagUpdater = new TagUpdater(unleashConfig, unleashClient, unleashSessionManager);
-        var featureUpdater = new FeatureUpdater(unleashConfig, unleashClient, unleashSessionManager);
-        var featureTagUpdater = new FeatureTagsUpdater(unleashConfig, unleashClient, unleashSessionManager);
+        UnleashUpdatersFactory unleashUpdatersFactory = new UnleashUpdatersFactory(unleashClient, unleashSessionManager);
 
-        tagUpdater.update();
-        featureUpdater.update();
-        featureTagUpdater.update();
+        UnleashAgent unleashAgent = new UnleashAgent(unleashUpdatersFactory.buildUpdaters());
+
+        unleashAgent.synchronizeConfiguration(newUnleashConfiguration);
     }
 
 }

@@ -24,21 +24,20 @@ public class FeatureUpdater {
 
     private static final String PROJECT_NAME = "default";
 
-    final UnleashConfiguration unleashConfiguration;
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void update() {
+    public void update(UnleashConfiguration newConfiguration) {
         log.info("Check unleash features for update");
-        var remoteFeatuers = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie()).features();
-        var localFeatures = unleashConfiguration.features();
+        var remoteFeatures = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie()).features();
+        var localFeatures = newConfiguration.features();
 
         var flagsToCreate = new ArrayList<Feature>();
         var flagsToUpdate = new ArrayList<Feature>();
         var flagsToDelete = new ArrayList<Feature>();
 
         for (Feature localFlag : localFeatures) {
-            var featureAlreadyActual = remoteFeatuers.stream().
+            var featureAlreadyActual = remoteFeatures.stream().
                     map((remoteFeature) -> compareFeatures(localFlag,remoteFeature) )
                     .anyMatch(compareResult -> compareResult.type() == EQUAL);
             if (featureAlreadyActual) {
@@ -46,7 +45,7 @@ public class FeatureUpdater {
                 continue;
             }
 
-            var featureChanged = remoteFeatuers.stream().
+            var featureChanged = remoteFeatures.stream().
                     map((remoteFeature) -> compareFeatures(localFlag,remoteFeature) )
                     .filter(compareResult -> compareResult.type() == CHANGED)
                     .findFirst();
@@ -59,7 +58,7 @@ public class FeatureUpdater {
             log.info("Feature {} not found in Unleash and need to be created", localFlag.name());
             flagsToCreate.add(localFlag);
         }
-        for (Feature remoteFlag : remoteFeatuers) {
+        for (Feature remoteFlag : remoteFeatures) {
             if (localFeatures.stream().noneMatch(localFlag -> localFlag.name().equals(remoteFlag.name()))) {
                 log.info("Feature {} exists in Unleash but not declared in local config. Feature will be deleted", remoteFlag.name());
                 flagsToDelete.add(remoteFlag);

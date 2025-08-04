@@ -13,15 +13,14 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class TagUpdater {
 
-    UnleashConfiguration unleashConfiguration;
     UnleashClient unleashClient;
     UnleashSessionManager unleashSessionManager;
 
-    public void update() {
+    public void update(UnleashConfiguration newConfiguration) {
         log.info("Check unleash tags for update");
         var remoteTags = unleashClient.getTags(unleashSessionManager.getUnleashSessionCookie())
                 .tags();
-        var localTags = unleashConfiguration.tags();
+        var localTags = newConfiguration.tags();
 
         var tagsToCreate = new ArrayList<Tag>();
         var tagsToDelete = new ArrayList<Tag>();

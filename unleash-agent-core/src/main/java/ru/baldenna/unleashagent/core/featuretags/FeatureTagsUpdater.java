@@ -19,16 +19,15 @@ public class FeatureTagsUpdater {
 
     private static final String PROJECT_NAME = "default";
 
-    final UnleashConfiguration unleashConfiguration;
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void update() {
+    public void update(UnleashConfiguration newConfiguration) {
         log.info("Check unleash feature tags for update");
         var remoteFeaturesWithTags = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie())
                 .features().stream()
                 .collect(Collectors.toMap(Feature::name, Feature::tags));
-        var localFeaturesWithTags = unleashConfiguration.features().stream()
+        var localFeaturesWithTags = newConfiguration.features().stream()
                 .collect(Collectors.toMap(Feature::name, Feature::tags));
 
         var featureTagsToCreate = getMissedFeatureTags(localFeaturesWithTags, remoteFeaturesWithTags);
