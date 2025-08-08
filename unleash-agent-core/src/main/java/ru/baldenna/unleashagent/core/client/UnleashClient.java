@@ -23,7 +23,7 @@ public interface UnleashClient {
         "Accept: application/json",
         "Cookie: unleash-session={sessionCookie}"
     })
-    String createFeature(
+    void createFeature(
             @Param("projectId") String projectId,
             CreateFeatureDto createFeatureDto,
             @Param("sessionCookie") String sessionCookie
@@ -35,6 +35,16 @@ public interface UnleashClient {
         "Cookie: unleash-session={sessionCookie}"
     })
     FeaturesResponse getFeatures(
+            @Param("limit") int limit,
+            @Param("project") String project,
+            @Param("sessionCookie") String sessionCookie
+    );
+    @RequestLine("GET /api/admin/search/features?limit={limit}&project={project}")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    String getFeaturesString(
             @Param("limit") int limit,
             @Param("project") String project,
             @Param("sessionCookie") String sessionCookie
