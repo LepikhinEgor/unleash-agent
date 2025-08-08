@@ -2,3 +2,5 @@ rootProject.name = 'unleash-agent'
 
 include 'unleash-agent-core'
 include 'unleash-agent-cli'
+include 'unleash-agent-spring-starter'
+include 'unleash-agent-spring-example'

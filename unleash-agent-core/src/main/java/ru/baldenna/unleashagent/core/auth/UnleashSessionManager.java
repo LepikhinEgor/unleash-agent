@@ -13,6 +13,9 @@ public class UnleashSessionManager {
 
     final UnleashClient unleashClient;
 
+    final String unleashLogin;
+    final String unleashPassword;
+
     private String sessionCookie;
 
     public String getUnleashSessionCookie() {
@@ -25,7 +28,7 @@ public class UnleashSessionManager {
         log.info("Session cookie not found. Trying to login");
 
         // TODO спрятать логин пароль
-        var userResponse = unleashClient.login(new LoginRequest("admin", "1231234"));
+        var userResponse = unleashClient.login(new LoginRequest(unleashLogin, unleashPassword));
 
         String unleashSessionCookie = getUnleashSessionCookie(userResponse);
         sessionCookie = unleashSessionCookie;

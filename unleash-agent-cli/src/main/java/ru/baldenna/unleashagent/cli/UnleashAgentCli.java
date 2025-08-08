@@ -24,7 +24,7 @@ public class UnleashAgentCli {
         var newUnleashConfiguration = yamlParser.parse(yamlConfiguration);
 
         var unleashClient = unleashClientFactory.buildClient(cliArgs.unleashUrl());
-        var unleashSessionManager = new UnleashSessionManager(unleashClient);
+        var unleashSessionManager = new UnleashSessionManager(unleashClient, cliArgs.unleashLogin(),cliArgs.unleashPassword());
 
         UnleashUpdatersFactory unleashUpdatersFactory = new UnleashUpdatersFactory(unleashClient, unleashSessionManager);
 

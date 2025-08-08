@@ -17,8 +17,16 @@ public class CliArgsValidator {
         options.addOption(configurationFIle);
 
         Option unleashUrl = new Option("u", "unleash-url", true, "Unleash server URL");
-        configurationFIle.setRequired(true);
+        unleashUrl.setRequired(true);
         options.addOption(unleashUrl);
+
+        Option unleashLogin = new Option("l", "login", true, "Unleash login/username");
+        unleashLogin.setRequired(true);
+        options.addOption(unleashLogin);
+
+        Option unleashPassword = new Option("p", "password", true, "Unleash user password");
+        unleashPassword.setRequired(true);
+        options.addOption(unleashPassword);
 
         CommandLineParser parser = new DefaultParser();
 
@@ -26,7 +34,9 @@ public class CliArgsValidator {
             var cliArgs = parser.parse(options, args);
             return new CliArgs(
                     cliArgs.getOptionValue("unleash-url"),
-                    cliArgs.getOptionValue("file")
+                    cliArgs.getOptionValue("file"),
+                    cliArgs.getOptionValue("login"),
+                    cliArgs.getOptionValue("password")
             );
         } catch (ParseException e) {
             HelpFormatter formatter = new HelpFormatter();
