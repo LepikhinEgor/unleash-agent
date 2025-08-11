@@ -1,22 +1,66 @@
 package ru.baldenna.unleashagent.core;
 
 import org.junit.jupiter.api.Test;
-import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-public class FeatureUpdateTests extends UnleashAbstractTest{
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class FeatureUpdateTests extends UnleashAbstractTest {
 
     @Test
-    public void shouldCreateFeature() throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("UnleashConfig.yaml").getFile());
-        var configuration = yamlConfigurationParser.parse(Files.readString(file.toPath()));
+    public void shouldCreateFeature_whenFeatureNotExistsInUnleash() throws IOException {
+        // given
+        var configuration = parseUnleashConfigFile("OneFeatureConfig.yaml");
+
+        // when
         unleashAgent.synchronizeConfiguration(configuration);
+
+        // then
+        var actualFeatures = getUnleashFeatures();
+
+        assertThat(actualFeatures).hasSize(1);
+        assertThat(actualFeatures.getFirst().name()).isEqualTo("test-feature");
+        assertThat(actualFeatures.getFirst().type()).isEqualTo("release");
+        assertThat(actualFeatures.getFirst().description()).isEqualTo("This is feature for test feature creation");
     }
+
+    @Test
+    public void shouldUpdateFeature_whenFeatureWithSameNameExistsInUnleash() throws IOException {
+        // given
+        var configuration = parseUnleashConfigFile("OneFeatureConfig.yaml");
+        createFeature("test-feature", "experiment", "Old description");
+
+        // when
+        unleashAgent.synchronizeConfiguration(configuration);
+
+        // then
+        var actualFeatures = getUnleashFeatures();
+
+        assertThat(actualFeatures).hasSize(1);
+        assertThat(actualFeatures.getFirst().name()).isEqualTo("test-feature");
+        assertThat(actualFeatures.getFirst().type()).isEqualTo("release");
+        assertThat(actualFeatures.getFirst().description()).isEqualTo("This is feature for test feature creation");
+    }
+
+    @Test
+    public void shouldDeleteFeature_whenFeatureNotFoundInConfigurationButExistsInUnleash() throws IOException {
+        // given
+        var configuration = parseUnleashConfigFile("OneFeatureConfig.yaml");
+        createFeature("test-feature", "release", "This is feature for test feature creation");
+        createFeature("unknown-feature", "release", "Unknown");
+
+        // when
+        unleashAgent.synchronizeConfiguration(configuration);
+
+        // then
+        var actualFeatures = getUnleashFeatures();
+
+        assertThat(actualFeatures).hasSize(1);
+        assertThat(actualFeatures.getFirst().name()).isEqualTo("test-feature");
+        assertThat(actualFeatures.getFirst().type()).isEqualTo("release");
+        assertThat(actualFeatures.getFirst().description()).isEqualTo("This is feature for test feature creation");
+    }
+
 }
 

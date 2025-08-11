@@ -72,8 +72,8 @@ public class FeatureTagsUpdater {
     private void deleteTagFromFeature(FeatureTag featureTag) {
         unleashClient.deleteTagFromFeature(
                 featureTag.feature(),
-                featureTag.tagValue(),
                 featureTag.tagType(),
+                featureTag.tagValue(),
                 unleashSessionManager.getUnleashSessionCookie()
         );
         log.info("Tag {}:{} for feature {} was deleted", featureTag.tagType(), featureTag.tagValue(), featureTag.feature());

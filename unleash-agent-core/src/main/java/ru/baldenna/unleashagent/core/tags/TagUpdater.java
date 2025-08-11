@@ -60,7 +60,7 @@ public class TagUpdater {
     }
 
     public void deleteTag(Tag deleteTagTask) {
-        unleashClient.deleteTag(deleteTagTask.value(), deleteTagTask.type(), unleashSessionManager.getUnleashSessionCookie());
+        unleashClient.deleteTag(deleteTagTask.type(), deleteTagTask.value(), unleashSessionManager.getUnleashSessionCookie());
 
         log.info("Tag deleted: {}:{}", deleteTagTask.type(), deleteTagTask.value());
     }

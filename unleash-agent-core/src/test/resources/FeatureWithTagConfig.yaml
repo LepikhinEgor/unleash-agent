@@ -1,0 +1,12 @@
+tags:
+  - value: alpha
+    type: simple
+  - value: beta
+    type: simple
+features:
+  - name: test-feature
+    type: release
+    description: This is feature for test feature creation
+    tags:
+      - value: beta
+        type: simple

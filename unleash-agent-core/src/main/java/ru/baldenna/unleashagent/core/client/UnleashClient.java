@@ -10,6 +10,8 @@ import ru.baldenna.unleashagent.core.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
+import ru.baldenna.unleashagent.core.tagtypes.TagType;
+import ru.baldenna.unleashagent.core.tagtypes.TagTypes;
 
 public interface UnleashClient {
 
@@ -61,6 +63,17 @@ public interface UnleashClient {
             @Param("sessionCookie") String sessionCookie
     );
 
+    @RequestLine("DELETE /api/admin/archive/{featureName}")
+    @Headers({
+        "Accept: application/json",
+        "Cookie: unleash-session={sessionCookie}"
+    })
+    void deleteFeature(
+            @Param("featureName") String featureName,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+
     @RequestLine("PUT /api/admin/projects/{projectId}/features/{featureName}")
     @Headers({
         "Content-Type: application/json",
@@ -110,8 +123,29 @@ public interface UnleashClient {
         "Accept: application/json",
         "Cookie: unleash-session={sessionCookie}"
     })
-    String getTagTypes(
+    TagTypes getTagTypes(
             @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("POST /api/admin/tag-types")
+    @Headers({
+        "Content-Type: application/json",
+        "Accept: application/json",
+        "Cookie: unleash-session={sessionCookie}"
+    })
+    void createTagType(
+        TagType tagType,
+        @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("DELETE /api/admin/tag-types/{name}")
+    @Headers({
+        "Cookie: unleash-session={sessionCookie}",
+        "Accept: application/json"
+    })
+    void deleteTagType(
+        @Param("name") String name,
+        @Param("sessionCookie") String sessionCookie
     );
 
     @RequestLine("POST /api/admin/features/{featureName}/tags")
@@ -122,7 +156,7 @@ public interface UnleashClient {
     })
     void addTagToFeature(
             @Param("featureName") String featureName,
-            Tag tagRequest,
+            Tag tag,
             @Param("sessionCookie") String sessionCookie
     );
 

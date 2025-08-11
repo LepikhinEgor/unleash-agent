@@ -118,6 +118,7 @@ public class FeatureUpdater {
 
     public void deleteFeature(Feature deleteFeatureTask) {
         unleashClient.archiveFeature(PROJECT_NAME, deleteFeatureTask.name(), unleashSessionManager.getUnleashSessionCookie());
+        unleashClient.deleteFeature(deleteFeatureTask.name(), unleashSessionManager.getUnleashSessionCookie());
 
         log.info("Feature deleted: {}", deleteFeatureTask.name());
     }
