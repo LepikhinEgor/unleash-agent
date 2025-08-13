@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'java-library'
+    id 'checkstyle'
 }
 
 group = 'ru.baldenna'
@@ -31,6 +32,10 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers:1.21.3'
     testImplementation 'org.testcontainers:postgresql:1.21.3'
     testImplementation 'org.assertj:assertj-core:3.27.4'
+}
+
+checkstyle {
+    toolVersion = '11.0.0'
 }
 
 test {
