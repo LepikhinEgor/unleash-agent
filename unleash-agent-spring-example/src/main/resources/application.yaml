@@ -18,43 +18,45 @@ unleash:
         type: simple
       - value: beta
         type: simple
-    features:
-      - name: test-automation
-        type: release
-        description: This is feature for test feature creation
-        tags:
-          - value: beta
-            type: simple
-      - name: feature2
-        type: release
-        description: This is feature 2
-        tags:
-          - value: obip
-            type: simple
-      - name: feature32
-        type: release
-        description: This is feature 3
-        tags:
-          - value: test3
-            type: simple
-      - name: feature4
-        type: release
-        description: This is feature ff
-        tags:
-          - value: test1
-            type: simple
-      - name: feature5
-        type: release
-        description: This is feature ffff33
-        tags:
-          - value: test1
-            type: simple
-      - name: feature6
-        type: experiment
-        description: This is feature ffffffff
-      - name: feature78
-        type: experiment
-        description: This is feature semm
-        tags:
-          - value: newTag
-            type: simple
+    projects:
+      default:
+        features:
+          - name: test-automation
+            type: release
+            description: This is feature for test feature creation
+            tags:
+              - value: beta
+                type: simple
+          - name: feature2
+            type: release
+            description: This is feature 2
+            tags:
+              - value: obip
+                type: simple
+          - name: feature32
+            type: release
+            description: This is feature 3
+            tags:
+              - value: test3
+                type: simple
+          - name: feature4
+            type: release
+            description: This is feature ff
+            tags:
+              - value: test1
+                type: simple
+          - name: feature5
+            type: release
+            description: This is feature ffff33
+            tags:
+              - value: test1
+                type: simple
+          - name: feature6
+            type: experiment
+            description: This is feature ffffffff
+          - name: feature78
+            type: experiment
+            description: This is feature semm
+            tags:
+              - value: newTag
+                type: simple

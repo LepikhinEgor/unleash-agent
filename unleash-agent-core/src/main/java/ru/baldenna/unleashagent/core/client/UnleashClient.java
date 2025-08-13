@@ -8,6 +8,7 @@ import ru.baldenna.unleashagent.core.auth.LoginRequest;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
+import ru.baldenna.unleashagent.core.projects.ProjectsResponse;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
@@ -160,6 +161,7 @@ public interface UnleashClient {
             @Param("sessionCookie") String sessionCookie
     );
 
+
     @RequestLine("DELETE /api/admin/features/{featureName}/tags/{type}/{value}")
     @Headers({
         "Accept: application/json",
@@ -171,5 +173,13 @@ public interface UnleashClient {
             @Param("value") String value,
             @Param("sessionCookie") String sessionCookie
     );
+
+    @RequestLine("GET /api/admin/projects")
+    @Headers({
+        "Accept: application/json",
+        "Cookie: unleash-session={sessionCookie}"
+    })
+    ProjectsResponse getProjects(@Param("sessionCookie") String sessionCookie);
+
 
 }

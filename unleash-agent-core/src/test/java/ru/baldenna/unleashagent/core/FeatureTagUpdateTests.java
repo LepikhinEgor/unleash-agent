@@ -14,13 +14,14 @@ public class FeatureTagUpdateTests extends UnleashAbstractTest{
     public void shouldCreateFeatureTag_whenFeatureTagNotExistsInUnleash() throws IOException {
         // given
         var configuration = parseUnleashConfigFile("FeatureWithTagConfig.yaml");
-        createFeature("test-feature", "release", "This is feature for test feature creation");
+        var projectName = getProjectName(configuration);
+        createFeature("test-feature", "release", "This is feature for test feature creation", projectName);
 
         // when
         unleashAgent.synchronizeConfiguration(configuration);
 
         // then
-        var featureTags = getUnleashFeatures().getFirst().tags();
+        var featureTags = getUnleashFeatures(projectName).getFirst().tags();
 
         assertThat(featureTags).hasSize(1);
         assertThat(featureTags).anyMatch(tag -> tag.value().equals("beta") && tag.type().equals("simple"));
@@ -30,7 +31,8 @@ public class FeatureTagUpdateTests extends UnleashAbstractTest{
     public void shouldReplaceFeatureTag_whenFeatureTagWithSameNameButOtherTypeExistsInUnleash() throws IOException {
         // given
         var configuration = parseUnleashConfigFile("FeatureWithTagConfig.yaml");
-        createFeature("test-feature", "release", "This is feature for test feature creation");
+        var projectName = getProjectName(configuration);
+        createFeature("test-feature", "release", "This is feature for test feature creation",projectName);
         createTagType("custom", "Custom tag type");
         addTagToFeature("test-feature","beta", "custom");
 
@@ -38,7 +40,7 @@ public class FeatureTagUpdateTests extends UnleashAbstractTest{
         unleashAgent.synchronizeConfiguration(configuration);
 
         // then
-        var featureTags = getUnleashFeatures().getFirst().tags();
+        var featureTags = getUnleashFeatures(projectName).getFirst().tags();
 
         assertThat(featureTags).hasSize(1);
         assertThat(featureTags).anyMatch(tag -> tag.value().equals("beta") && tag.type().equals("simple"));
@@ -48,14 +50,15 @@ public class FeatureTagUpdateTests extends UnleashAbstractTest{
     public void shouldDeleteFeatureTag_whenFeatureTagNotFoundInConfigurationButExistsInUnleash() throws IOException {
         // given
         var configuration = parseUnleashConfigFile("FeatureWithTagConfig.yaml");
-        createFeature("test-feature", "release", "This is feature for test feature creation");
+        var projectName = getProjectName(configuration);
+        createFeature("test-feature", "release", "This is feature for test feature creation", projectName);
         addTagToFeature("test-feature", "alpha", "simple");
 
         // when
         unleashAgent.synchronizeConfiguration(configuration);
 
         // then
-        var featureTags = getUnleashFeatures().getFirst().tags();
+        var featureTags = getUnleashFeatures(projectName).getFirst().tags();
 
         assertThat(featureTags).hasSize(1);
         assertThat(featureTags).anyMatch(tag -> tag.value().equals("beta") && tag.type().equals("simple"));

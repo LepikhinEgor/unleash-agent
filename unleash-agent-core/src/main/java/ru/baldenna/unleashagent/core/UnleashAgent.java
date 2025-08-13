@@ -11,8 +11,11 @@ public class UnleashAgent {
 
     public void synchronizeConfiguration(UnleashConfiguration unleashConfiguration){
         updaters.tagUpdater().update(unleashConfiguration);
-        updaters.featureUpdater().update(unleashConfiguration);
-        updaters.featureTagUpdater().update(unleashConfiguration);
+
+        unleashConfiguration.projects().forEach((projectName, projectConfiguration) -> {
+                updaters.featureUpdater().update(projectName, projectConfiguration);
+                updaters.featureTagUpdater().update(projectName, projectConfiguration);
+        });
     }
 
 }

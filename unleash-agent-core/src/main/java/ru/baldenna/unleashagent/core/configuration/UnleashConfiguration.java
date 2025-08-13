@@ -1,28 +1,29 @@
 package ru.baldenna.unleashagent.core.configuration;
 
-import ru.baldenna.unleashagent.core.features.model.Feature;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
 public record UnleashConfiguration(
 
-    List<Feature> features,
-
-    List<Tag> tags
-
+        List<Tag> tags,
+        Map<String, UnleashProjectConfiguration> projects
 ) {
-    @Override
-    public List<Feature> features() {
-        return Optional.ofNullable(features).orElse(emptyList());
-    }
+
+    private static final String DEFAULT_PROJECT_NAME = "default";
 
     @Override
     public List<Tag> tags() {
         return Optional.ofNullable(tags).orElse(emptyList());
+    }
+
+    @Override
+    public Map<String, UnleashProjectConfiguration> projects() {
+        return Optional.ofNullable(projects)
+                .orElse(Map.of(DEFAULT_PROJECT_NAME, new UnleashProjectConfiguration(emptyList())));
     }
 }

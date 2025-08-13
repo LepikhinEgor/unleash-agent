@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
+import ru.baldenna.unleashagent.core.configuration.UnleashProjectConfiguration;
 import ru.baldenna.unleashagent.core.features.model.CompareResult;
 import ru.baldenna.unleashagent.core.features.model.CompareResultType;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
@@ -22,19 +23,17 @@ import static ru.baldenna.unleashagent.core.features.model.CompareResultType.NOT
 @RequiredArgsConstructor
 public class FeatureUpdater {
 
-    private static final String PROJECT_NAME = "default";
-
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void update(UnleashConfiguration newConfiguration) {
+    public void update(String projectName, UnleashProjectConfiguration newConfiguration) {
         log.info("Check unleash features for update");
-        var remoteFeatures = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie()).features();
+        var remoteFeatures = unleashClient.getFeatures(10000, "IS:" + projectName, unleashSessionManager.getUnleashSessionCookie()).features();
         var localFeatures = newConfiguration.features();
 
-        var flagsToCreate = new ArrayList<Feature>();
-        var flagsToUpdate = new ArrayList<Feature>();
-        var flagsToDelete = new ArrayList<Feature>();
+        var featuresToCreate = new ArrayList<Feature>();
+        var featuresToUpdate = new ArrayList<Feature>();
+        var featuresToDelete = new ArrayList<Feature>();
 
         for (Feature localFlag : localFeatures) {
             var featureAlreadyActual = remoteFeatures.stream().
@@ -51,29 +50,29 @@ public class FeatureUpdater {
                     .findFirst();
             if (featureChanged.isPresent()) {
                 log.info("Feature {} exists but need to be changed. Reason: {}", localFlag.name(), featureChanged.get().details());
-                flagsToUpdate.add(localFlag);
+                featuresToUpdate.add(localFlag);
                 continue;
             }
 
             log.info("Feature {} not found in Unleash and need to be created", localFlag.name());
-            flagsToCreate.add(localFlag);
+            featuresToCreate.add(localFlag);
         }
         for (Feature remoteFlag : remoteFeatures) {
             if (localFeatures.stream().noneMatch(localFlag -> localFlag.name().equals(remoteFlag.name()))) {
                 log.info("Feature {} exists in Unleash but not declared in local config. Feature will be deleted", remoteFlag.name());
-                flagsToDelete.add(remoteFlag);
+                featuresToDelete.add(remoteFlag);
             }
         }
 
-        if (flagsToCreate.size() + flagsToUpdate.size() + flagsToDelete.size() != 0) {
-            log.info("Feature states was compared. Count to create = {}, count to update = {}, count to delete = {}", flagsToCreate.size(), flagsToUpdate.size(), flagsToDelete.size());
+        if (featuresToCreate.size() + featuresToUpdate.size() + featuresToDelete.size() != 0) {
+            log.info("Feature states was compared. Count to create = {}, count to update = {}, count to delete = {}", featuresToCreate.size(), featuresToUpdate.size(), featuresToDelete.size());
         } else {
             log.info("Unleash features already up to date");
         }
 
-        flagsToCreate.forEach(this::createFeature);
-        flagsToUpdate.forEach(this::updateFeature);
-        flagsToDelete.forEach(this::deleteFeature);
+        featuresToCreate.forEach(feature -> createFeature(feature, projectName));
+        featuresToUpdate.forEach(feature -> updateFeature(feature, projectName));
+        featuresToDelete.forEach(feature -> deleteFeature(feature, projectName));
     }
 
     private CompareResult compareFeatures(Feature local, Feature remote) {
@@ -97,27 +96,27 @@ public class FeatureUpdater {
         }
     }
 
-    public void createFeature(Feature createFeatureTask) {
+    public void createFeature(Feature createFeatureTask, String project) {
         CreateFeatureDto createFeatureDto = new CreateFeatureDto(
                 createFeatureTask.name(),
                 createFeatureTask.type(),
                 createFeatureTask.description(),
                 createFeatureTask.tags());
 
-        unleashClient.createFeature(PROJECT_NAME, createFeatureDto, unleashSessionManager.getUnleashSessionCookie());
+        unleashClient.createFeature(project, createFeatureDto, unleashSessionManager.getUnleashSessionCookie());
 
         log.info("Feature created: {}", createFeatureDto.getName());
     }
 
-    public void updateFeature(Feature updateFeatureTask) {
-        unleashClient.updateFeature(PROJECT_NAME, updateFeatureTask.name(), new UpdateFeatureDto(
+    public void updateFeature(Feature updateFeatureTask, String project) {
+        unleashClient.updateFeature(project, updateFeatureTask.name(), new UpdateFeatureDto(
                 updateFeatureTask.type(),
                 updateFeatureTask.description()), unleashSessionManager.getUnleashSessionCookie());
         log.info("Feature updated: {}", updateFeatureTask.name());
     }
 
-    public void deleteFeature(Feature deleteFeatureTask) {
-        unleashClient.archiveFeature(PROJECT_NAME, deleteFeatureTask.name(), unleashSessionManager.getUnleashSessionCookie());
+    public void deleteFeature(Feature deleteFeatureTask, String project) {
+        unleashClient.archiveFeature(project, deleteFeatureTask.name(), unleashSessionManager.getUnleashSessionCookie());
         unleashClient.deleteFeature(deleteFeatureTask.name(), unleashSessionManager.getUnleashSessionCookie());
 
         log.info("Feature deleted: {}", deleteFeatureTask.name());

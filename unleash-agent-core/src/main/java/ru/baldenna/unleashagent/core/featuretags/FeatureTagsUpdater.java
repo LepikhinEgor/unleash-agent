@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
+import ru.baldenna.unleashagent.core.configuration.UnleashProjectConfiguration;
 import ru.baldenna.unleashagent.core.features.model.Feature;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import java.util.ArrayList;
@@ -17,14 +18,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FeatureTagsUpdater {
 
-    private static final String PROJECT_NAME = "default";
-
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void update(UnleashConfiguration newConfiguration) {
+    public void update( String projectName, UnleashProjectConfiguration newConfiguration) {
         log.info("Check unleash feature tags for update");
-        var remoteFeaturesWithTags = unleashClient.getFeatures(10000, "IS:default", unleashSessionManager.getUnleashSessionCookie())
+        var remoteFeaturesWithTags = unleashClient.getFeatures(10000, "IS:"+ projectName, unleashSessionManager.getUnleashSessionCookie())
                 .features().stream()
                 .collect(Collectors.toMap(Feature::name, Feature::tags));
         var localFeaturesWithTags = newConfiguration.features().stream()

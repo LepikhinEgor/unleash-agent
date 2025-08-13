@@ -3,10 +3,12 @@ tags:
     type: simple
   - value: beta
     type: simple
-features:
-  - name: test-feature
-    type: release
-    description: This is feature for test feature creation
-    tags:
-      - value: beta
-        type: simple
+projects:
+  default:
+    features:
+      - name: test-feature
+        type: release
+        description: This is feature for test feature creation
+        tags:
+          - value: beta
+            type: simple

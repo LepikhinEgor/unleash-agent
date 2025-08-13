@@ -77,7 +77,8 @@ class UnleashAbstractTest {
     @BeforeEach
     protected void clearUnleashState() {
         // TODO replace with bulk operations
-        getUnleashFeatures().forEach(
+        var projectName = unleashClient.getProjects(sessionManager.getUnleashSessionCookie()).projects().getFirst().id();
+        getUnleashFeatures(projectName).forEach(
                 feature -> {
                     unleashClient.archiveFeature("default", feature.name(), sessionManager.getUnleashSessionCookie());
                     unleashClient.deleteFeature(feature.name(), sessionManager.getUnleashSessionCookie());
@@ -102,8 +103,8 @@ class UnleashAbstractTest {
         return unleashClient.getTags(sessionManager.getUnleashSessionCookie()).tags();
     }
 
-    protected List<Feature> getUnleashFeatures() {
-        return unleashClient.getFeatures(9999, "IS:default", sessionManager.getUnleashSessionCookie()).features();
+    protected List<Feature> getUnleashFeatures(String project) {
+        return unleashClient.getFeatures(9999, "IS:" + project, sessionManager.getUnleashSessionCookie()).features();
     }
 
     protected UnleashConfiguration parseUnleashConfigFile(String filePath) throws IOException {
@@ -112,8 +113,8 @@ class UnleashAbstractTest {
         return yamlConfigurationParser.parse(Files.readString(file.toPath()));
     }
 
-    protected void createFeature(String name, String release, String description) {
-        unleashClient.createFeature("default",
+    protected void createFeature(String name, String release, String description, String project) {
+        unleashClient.createFeature(project,
                 new CreateFeatureDto(name, release, description, new HashSet<>()),
                 sessionManager.getUnleashSessionCookie());
     }
@@ -128,6 +129,10 @@ class UnleashAbstractTest {
 
     protected void createTagType(String name, String description) {
         unleashClient.createTagType(new TagType(name, description), sessionManager.getUnleashSessionCookie());
+    }
+
+    protected String getProjectName(UnleashConfiguration configuration) {
+        return configuration.projects().keySet().stream().findFirst().orElseThrow();
     }
 
 }
