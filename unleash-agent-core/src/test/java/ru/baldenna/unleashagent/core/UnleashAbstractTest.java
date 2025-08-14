@@ -26,15 +26,15 @@ import java.util.List;
 
 class UnleashAbstractTest {
 
-    public static Network network = Network.newNetwork();
+    private static Network network = Network.newNetwork();
 
     private static final DockerImageName unleashImage = DockerImageName.parse("unleashorg/unleash-server");
 
-    public static GenericContainer<?> unleashContainer = new GenericContainer<>(unleashImage)
+    private static GenericContainer<?> unleashContainer = new GenericContainer<>(unleashImage)
             .withNetwork(network)
             .withNetworkAliases("unleash");
 
-    public static final DockerImageName POSTGRESQL_IMAGE = DockerImageName.parse("postgres:16-alpine")
+    private static final DockerImageName POSTGRESQL_IMAGE = DockerImageName.parse("postgres:16-alpine")
             .asCompatibleSubstituteFor("postgres");
 
     private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>(POSTGRESQL_IMAGE)
@@ -45,10 +45,10 @@ class UnleashAbstractTest {
             .withNetworkAliases("postgres");
 
 
-    YamlConfigurationParser yamlConfigurationParser = new YamlConfigurationParser();
-    UnleashClient unleashClient;
-    UnleashAgent unleashAgent;
-    UnleashSessionManager sessionManager;
+    protected YamlConfigurationParser yamlConfigurationParser = new YamlConfigurationParser();
+    protected UnleashClient unleashClient;
+    protected UnleashAgent unleashAgent;
+    protected UnleashSessionManager sessionManager;
 
     static {
         postgreSQLContainer.start();

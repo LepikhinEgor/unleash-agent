@@ -11,9 +11,9 @@ repositories {
 
 dependencies {
     implementation(project(":unleash-agent-core"))
-    implementation 'commons-cli:commons-cli:1.9.0'
+    implementation "commons-cli:commons-cli:${Versions.cliLib}"
 
-    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation platform("org.junit:junit-bom:${Versions.junit}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 

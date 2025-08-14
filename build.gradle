@@ -1,3 +1,5 @@
+import jdk.javadoc.internal.Versions
+
 plugins {
     id 'java'
 }
@@ -23,7 +25,6 @@ repositories {
 }
 
 dependencies {
-
 }
 
 tasks.named('test') {
