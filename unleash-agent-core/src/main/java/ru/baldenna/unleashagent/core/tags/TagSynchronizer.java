@@ -9,6 +9,9 @@ import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.ArrayList;
 
+/**
+ * Synchronizes tags in Unleash with tags in the given configuration
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class TagSynchronizer {
@@ -18,7 +21,7 @@ public class TagSynchronizer {
 
     public void synchronize(UnleashConfiguration newConfiguration) {
         log.info("Check unleash tags for update");
-        var remoteTags = unleashClient.getTags(unleashSessionManager.parseUnleashSession())
+        var remoteTags = unleashClient.getTags(unleashSessionManager.getSessionCookie())
                 .tags();
         var localTags = newConfiguration.tags();
 
@@ -59,7 +62,7 @@ public class TagSynchronizer {
     private void createTag(Tag createTagTask) {
         unleashClient.createTag(
                 new Tag(createTagTask.value(), createTagTask.type()),
-                unleashSessionManager.parseUnleashSession()
+                unleashSessionManager.getSessionCookie()
         );
 
         log.info("Tag created: {}:{}", createTagTask.type(), createTagTask.value());
@@ -69,7 +72,7 @@ public class TagSynchronizer {
         unleashClient.deleteTag(
                 deleteTagTask.type(),
                 deleteTagTask.value(),
-                unleashSessionManager.parseUnleashSession()
+                unleashSessionManager.getSessionCookie()
         );
 
         log.info("Tag deleted: {}:{}", deleteTagTask.type(), deleteTagTask.value());

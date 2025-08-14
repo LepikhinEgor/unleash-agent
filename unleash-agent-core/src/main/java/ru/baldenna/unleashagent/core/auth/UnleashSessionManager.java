@@ -23,7 +23,7 @@ public class UnleashSessionManager {
 
     private UnleashSession currentSession;
 
-    public String parseUnleashSession() {
+    public String getSessionCookie() {
         if (alreadyAuthenticated()) {
             return currentSession.cookie();
         }
@@ -44,7 +44,7 @@ public class UnleashSessionManager {
                 && currentSession.expiresAt().isAfter(ZonedDateTime.now());
     }
 
-    private static UnleashSession parseUnleashSession(Response userResponse) {
+    private UnleashSession parseUnleashSession(Response userResponse) {
         return Objects.requireNonNull(userResponse.headers().get("Set-Cookie")).stream()
                 .filter((setCookie) -> setCookie.startsWith("unleash-session="))
                 .findFirst()

@@ -72,34 +72,34 @@ class UnleashAbstractTest {
     @BeforeEach
     protected void clearUnleashState() {
         // TODO replace with bulk operations
-        var projectName = unleashClient.getProjects(sessionManager.parseUnleashSession()).projects().getFirst().id();
+        var projectName = unleashClient.getProjects(sessionManager.getSessionCookie()).projects().getFirst().id();
         getUnleashFeatures(projectName).forEach(
                 feature -> {
-                    unleashClient.archiveFeature("default", feature.name(), sessionManager.parseUnleashSession());
-                    unleashClient.deleteFeature(feature.name(), sessionManager.parseUnleashSession());
+                    unleashClient.archiveFeature("default", feature.name(), sessionManager.getSessionCookie());
+                    unleashClient.deleteFeature(feature.name(), sessionManager.getSessionCookie());
                 }
         );
 
         getUnleashTags().forEach(tag ->
-                unleashClient.deleteTag(tag.type(), tag.value(), sessionManager.parseUnleashSession())
+                unleashClient.deleteTag(tag.type(), tag.value(), sessionManager.getSessionCookie())
         );
 
         getTagTypes().stream()
                 .filter(tagType -> !tagType.name().equals("simple"))
                 .forEach(tagType ->
-                        unleashClient.deleteTagType(tagType.name(), sessionManager.parseUnleashSession()));
+                        unleashClient.deleteTagType(tagType.name(), sessionManager.getSessionCookie()));
     }
 
     protected List<TagType> getTagTypes() {
-        return unleashClient.getTagTypes(sessionManager.parseUnleashSession()).tagTypes();
+        return unleashClient.getTagTypes(sessionManager.getSessionCookie()).tagTypes();
     }
 
     protected List<Tag> getUnleashTags() {
-        return unleashClient.getTags(sessionManager.parseUnleashSession()).tags();
+        return unleashClient.getTags(sessionManager.getSessionCookie()).tags();
     }
 
     protected List<Feature> getUnleashFeatures(String project) {
-        return unleashClient.getFeatures(9999, "IS:" + project, sessionManager.parseUnleashSession()).features();
+        return unleashClient.getFeatures(9999, "IS:" + project, sessionManager.getSessionCookie()).features();
     }
 
     protected UnleashConfiguration parseUnleashConfigFile(String filePath) throws IOException {
@@ -111,19 +111,19 @@ class UnleashAbstractTest {
     protected void createFeature(String name, String release, String description, String project) {
         unleashClient.createFeature(project,
                 new CreateFeatureDto(name, release, description, new HashSet<>()),
-                sessionManager.parseUnleashSession());
+                sessionManager.getSessionCookie());
     }
 
     protected void createTag(String value, String type) {
-        unleashClient.createTag(new Tag(value, type), sessionManager.parseUnleashSession());
+        unleashClient.createTag(new Tag(value, type), sessionManager.getSessionCookie());
     }
 
     protected void addTagToFeature(String featureName, String tagValue, String tagType) {
-        unleashClient.addTagToFeature(featureName, new Tag(tagValue, tagType), sessionManager.parseUnleashSession());
+        unleashClient.addTagToFeature(featureName, new Tag(tagValue, tagType), sessionManager.getSessionCookie());
     }
 
     protected void createTagType(String name, String description) {
-        unleashClient.createTagType(new TagType(name, description), sessionManager.parseUnleashSession());
+        unleashClient.createTagType(new TagType(name, description), sessionManager.getSessionCookie());
     }
 
     protected String getProjectName(UnleashConfiguration configuration) {

@@ -19,6 +19,9 @@ import static ru.baldenna.unleashagent.core.features.model.CompareResultType.EQU
 import static ru.baldenna.unleashagent.core.features.model.CompareResultType.ERROR;
 import static ru.baldenna.unleashagent.core.features.model.CompareResultType.NOT_EQUAL;
 
+/**
+ * Synchronizes features in Unleash with features in the given configuration
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class FeatureSynchronizer {
@@ -79,7 +82,7 @@ public class FeatureSynchronizer {
     }
 
     private List<Feature> getRemoteFeatures(String projectName) {
-        return unleashClient.getFeatures(projectName, sessionManager.parseUnleashSession()).features();
+        return unleashClient.getFeatures(projectName, sessionManager.getSessionCookie()).features();
     }
 
     private CompareResult compareFeatures(Feature local, Feature remote) {
@@ -117,7 +120,7 @@ public class FeatureSynchronizer {
                 createFeatureTask.description(),
                 createFeatureTask.tags());
 
-        unleashClient.createFeature(project, createFeatureDto, sessionManager.parseUnleashSession());
+        unleashClient.createFeature(project, createFeatureDto, sessionManager.getSessionCookie());
 
         log.info("Feature created: {}", createFeatureDto.name());
     }
@@ -125,13 +128,13 @@ public class FeatureSynchronizer {
     private void updateFeature(Feature updateFeatureTask, String project) {
         unleashClient.updateFeature(project, updateFeatureTask.name(), new UpdateFeatureDto(
                 updateFeatureTask.type(),
-                updateFeatureTask.description()), sessionManager.parseUnleashSession());
+                updateFeatureTask.description()), sessionManager.getSessionCookie());
         log.info("Feature updated: {}", updateFeatureTask.name());
     }
 
     private void deleteFeature(Feature deleteFeatureTask, String project) {
-        unleashClient.archiveFeature(project, deleteFeatureTask.name(), sessionManager.parseUnleashSession());
-        unleashClient.deleteFeature(deleteFeatureTask.name(), sessionManager.parseUnleashSession());
+        unleashClient.archiveFeature(project, deleteFeatureTask.name(), sessionManager.getSessionCookie());
+        unleashClient.deleteFeature(deleteFeatureTask.name(), sessionManager.getSessionCookie());
 
         log.info("Feature deleted: {}", deleteFeatureTask.name());
     }

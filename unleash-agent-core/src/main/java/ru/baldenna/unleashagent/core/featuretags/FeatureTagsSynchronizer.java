@@ -15,10 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Synchronizes feature tags in Unleash with feature tags in the given configuration
+ */
 @Slf4j
 @AllArgsConstructor
 public class FeatureTagsSynchronizer {
-
 
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
@@ -46,7 +48,7 @@ public class FeatureTagsSynchronizer {
     }
 
     private FeaturesResponse getRemoteFeatures(String projectName) {
-        return unleashClient.getFeatures(projectName, unleashSessionManager.parseUnleashSession());
+        return unleashClient.getFeatures(projectName, unleashSessionManager.getSessionCookie());
     }
 
     /**
@@ -72,7 +74,7 @@ public class FeatureTagsSynchronizer {
         unleashClient.addTagToFeature(
                 featureTag.feature(),
                 new Tag(featureTag.tagValue(), featureTag.tagType()),
-                unleashSessionManager.parseUnleashSession()
+                unleashSessionManager.getSessionCookie()
         );
         log.info("Tag {}:{} for feature {} was added",
                 featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
@@ -83,7 +85,7 @@ public class FeatureTagsSynchronizer {
                 featureTag.feature(),
                 featureTag.tagType(),
                 featureTag.tagValue(),
-                unleashSessionManager.parseUnleashSession()
+                unleashSessionManager.getSessionCookie()
         );
         log.info("Tag {}:{} for feature {} was deleted",
                 featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
