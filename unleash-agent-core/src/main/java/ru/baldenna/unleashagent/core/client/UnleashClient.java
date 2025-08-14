@@ -14,6 +14,10 @@ import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
 import ru.baldenna.unleashagent.core.tagtypes.TagTypes;
 
+/**
+ * Unleash API client.
+ * See <a href="https://docs.getunleash.io/api-overview">Unleash api</a>
+ */
 public interface UnleashClient {
 
     int FEATURES_LIMIT = 100000;

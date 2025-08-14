@@ -11,14 +11,14 @@ import java.util.ArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
-public class TagUpdater {
+public class TagSynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
 
-    public void update(UnleashConfiguration newConfiguration) {
+    public void synchronize(UnleashConfiguration newConfiguration) {
         log.info("Check unleash tags for update");
-        var remoteTags = unleashClient.getTags(unleashSessionManager.getUnleashSessionCookie())
+        var remoteTags = unleashClient.getTags(unleashSessionManager.parseUnleashSession())
                 .tags();
         var localTags = newConfiguration.tags();
 
@@ -56,20 +56,20 @@ public class TagUpdater {
         tagsToDelete.forEach(this::deleteTag);
     }
 
-    public void createTag(Tag createTagTask) {
+    private void createTag(Tag createTagTask) {
         unleashClient.createTag(
                 new Tag(createTagTask.value(), createTagTask.type()),
-                unleashSessionManager.getUnleashSessionCookie()
+                unleashSessionManager.parseUnleashSession()
         );
 
         log.info("Tag created: {}:{}", createTagTask.type(), createTagTask.value());
     }
 
-    public void deleteTag(Tag deleteTagTask) {
+    private void deleteTag(Tag deleteTagTask) {
         unleashClient.deleteTag(
                 deleteTagTask.type(),
                 deleteTagTask.value(),
-                unleashSessionManager.getUnleashSessionCookie()
+                unleashSessionManager.parseUnleashSession()
         );
 
         log.info("Tag deleted: {}:{}", deleteTagTask.type(), deleteTagTask.value());

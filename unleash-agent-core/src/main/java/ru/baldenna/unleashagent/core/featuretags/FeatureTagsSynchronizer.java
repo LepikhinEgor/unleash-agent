@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @AllArgsConstructor
-public class FeatureTagsUpdater {
+public class FeatureTagsSynchronizer {
 
 
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void update(String projectName, UnleashProjectConfiguration newConfiguration) {
+    public void synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
         log.info("Check unleash feature tags for update");
         var remoteFeaturesWithTags = getRemoteFeatures(projectName)
                 .features().stream()
@@ -46,7 +46,7 @@ public class FeatureTagsUpdater {
     }
 
     private FeaturesResponse getRemoteFeatures(String projectName) {
-        return unleashClient.getFeatures(projectName, unleashSessionManager.getUnleashSessionCookie());
+        return unleashClient.getFeatures(projectName, unleashSessionManager.parseUnleashSession());
     }
 
     /**
@@ -72,7 +72,7 @@ public class FeatureTagsUpdater {
         unleashClient.addTagToFeature(
                 featureTag.feature(),
                 new Tag(featureTag.tagValue(), featureTag.tagType()),
-                unleashSessionManager.getUnleashSessionCookie()
+                unleashSessionManager.parseUnleashSession()
         );
         log.info("Tag {}:{} for feature {} was added",
                 featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
@@ -83,7 +83,7 @@ public class FeatureTagsUpdater {
                 featureTag.feature(),
                 featureTag.tagType(),
                 featureTag.tagValue(),
-                unleashSessionManager.getUnleashSessionCookie()
+                unleashSessionManager.parseUnleashSession()
         );
         log.info("Tag {}:{} for feature {} was deleted",
                 featureTag.tagType(), featureTag.tagValue(), featureTag.feature());

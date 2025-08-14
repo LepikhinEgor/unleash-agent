@@ -8,8 +8,11 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
+/**
+ * Configuration for whole Unleash app.
+ * For example tags not linked for certain project and need to be configured independently
+ */
 public record UnleashConfiguration(
-
         List<Tag> tags,
         Map<String, UnleashProjectConfiguration> projects
 ) {

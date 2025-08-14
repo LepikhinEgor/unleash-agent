@@ -3,7 +3,7 @@ package ru.baldenna.unleashagent.cli;
 import ru.baldenna.unleashagent.core.UnleashAgent;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
-import ru.baldenna.unleashagent.core.common.UnleashUpdatersFactory;
+import ru.baldenna.unleashagent.core.common.SynchronizerFactory;
 import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
 
 import java.nio.file.Files;
@@ -26,9 +26,9 @@ public class UnleashAgentCli {
         var unleashClient = unleashClientFactory.buildClient(cliArgs.unleashUrl());
         var unleashSessionManager = new UnleashSessionManager(unleashClient, cliArgs.unleashLogin(), cliArgs.unleashPassword());
 
-        UnleashUpdatersFactory unleashUpdatersFactory = new UnleashUpdatersFactory(unleashClient, unleashSessionManager);
+        SynchronizerFactory synchronizerFactory = new SynchronizerFactory(unleashClient, unleashSessionManager);
 
-        UnleashAgent unleashAgent = new UnleashAgent(unleashUpdatersFactory.buildUpdaters());
+        UnleashAgent unleashAgent = new UnleashAgent(synchronizerFactory.buildUpdaters());
 
         unleashAgent.synchronizeConfiguration(newUnleashConfiguration);
     }

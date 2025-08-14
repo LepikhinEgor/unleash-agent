@@ -5,44 +5,52 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
+/**
+ * Performs authentication in Unleash and stores actual session cookie
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class UnleashSessionManager {
 
+    private static final int SESSION_TTL_DAYS = 1;
     final UnleashClient unleashClient;
 
     final String unleashLogin;
     final String unleashPassword;
 
-    private String sessionCookie;
+    private UnleashSession currentSession;
 
-    public String getUnleashSessionCookie() {
-        if (sessionCookie != null) {
-            return sessionCookie;
-            // TODO в консольном приложении нет смысла кэшировать
-            // TODO при протухании токена через 2 дня здесь будет ошибка авторизации, т.к будем отдавать тухлый токен
+    public String parseUnleashSession() {
+        if (alreadyAuthenticated()) {
+            return currentSession.cookie();
         }
 
         log.info("Session cookie not found. Trying to login");
 
-        // TODO спрятать логин пароль
         var userResponse = unleashClient.login(new LoginRequest(unleashLogin, unleashPassword));
 
-        String unleashSessionCookie = getUnleashSessionCookie(userResponse);
-        sessionCookie = unleashSessionCookie;
+        currentSession = parseUnleashSession(userResponse);
 
         log.info("Successfully logged in in unleash");
 
-        return unleashSessionCookie;
+        return currentSession.cookie();
     }
 
-    private static String getUnleashSessionCookie(Response userResponse) {
+    private boolean alreadyAuthenticated() {
+        return currentSession != null && currentSession.cookie() != null
+                && currentSession.expiresAt().isAfter(ZonedDateTime.now());
+    }
+
+    private static UnleashSession parseUnleashSession(Response userResponse) {
         return Objects.requireNonNull(userResponse.headers().get("Set-Cookie")).stream()
                 .filter((setCookie) -> setCookie.startsWith("unleash-session="))
                 .findFirst()
-                .map(setCookieHeader -> setCookieHeader.substring("unleash-session=".length()))
+                .map(setCookieHeader -> new UnleashSession(
+                                setCookieHeader.substring("unleash-session=".length()),
+                                ZonedDateTime.now().plusDays(SESSION_TTL_DAYS)))
                 .orElseThrow();
     }
 }

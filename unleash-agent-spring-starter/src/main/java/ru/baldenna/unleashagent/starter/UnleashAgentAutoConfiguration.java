@@ -7,8 +7,8 @@ import ru.baldenna.unleashagent.core.UnleashAgent;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
-import ru.baldenna.unleashagent.core.common.UnleashUpdaters;
-import ru.baldenna.unleashagent.core.common.UnleashUpdatersFactory;
+import ru.baldenna.unleashagent.core.common.UnleashSynchronizers;
+import ru.baldenna.unleashagent.core.common.SynchronizerFactory;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
 
@@ -33,19 +33,19 @@ public class UnleashAgentAutoConfiguration {
     }
 
     @Bean
-    UnleashUpdatersFactory unleashUpdatersFactory(UnleashClient unleashClient,
-                                                  UnleashSessionManager unleashSessionManager) {
-        return new UnleashUpdatersFactory(unleashClient, unleashSessionManager);
+    SynchronizerFactory unleashUpdatersFactory(UnleashClient unleashClient,
+                                               UnleashSessionManager unleashSessionManager) {
+        return new SynchronizerFactory(unleashClient, unleashSessionManager);
     }
 
     @Bean
-    UnleashUpdaters unleashUpdaters(UnleashUpdatersFactory unleashUpdatersFactory) {
-        return unleashUpdatersFactory.buildUpdaters();
+    UnleashSynchronizers unleashUpdaters(SynchronizerFactory synchronizerFactory) {
+        return synchronizerFactory.buildUpdaters();
     }
 
     @Bean
-    UnleashAgent unleashAgent(UnleashUpdaters unleashUpdaters) {
-        return new UnleashAgent(unleashUpdaters);
+    UnleashAgent unleashAgent(UnleashSynchronizers unleashSynchronizers) {
+        return new UnleashAgent(unleashSynchronizers);
     }
 
     @Bean

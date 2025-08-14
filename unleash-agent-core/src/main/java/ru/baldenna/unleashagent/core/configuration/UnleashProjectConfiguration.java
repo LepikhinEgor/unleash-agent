@@ -8,7 +8,8 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 
 /**
- *
+ * Configuration associated with a project in Unleash.
+ * There can be several projects in Unleash that are used as namespaces.
  */
 public record UnleashProjectConfiguration(
 

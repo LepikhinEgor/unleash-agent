@@ -21,12 +21,12 @@ import static ru.baldenna.unleashagent.core.features.model.CompareResultType.NOT
 
 @Slf4j
 @RequiredArgsConstructor
-public class FeatureUpdater {
+public class FeatureSynchronizer {
 
     final UnleashClient unleashClient;
     final UnleashSessionManager sessionManager;
 
-    public void update(String projectName, UnleashProjectConfiguration newConfiguration) {
+    public void synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
         log.info("Check unleash features for update");
         var remoteFeatures = getRemoteFeatures(projectName);
         var localFeatures = newConfiguration.features();
@@ -44,8 +44,8 @@ public class FeatureUpdater {
                 continue;
             }
 
-            var featureChanged = remoteFeatures.stream().
-                    map((remoteFeature) -> compareFeatures(localFlag, remoteFeature))
+            var featureChanged = remoteFeatures.stream()
+                    .map((remoteFeature) -> compareFeatures(localFlag, remoteFeature))
                     .filter(compareResult -> compareResult.type() == CHANGED)
                     .findFirst();
             if (featureChanged.isPresent()) {
@@ -79,7 +79,7 @@ public class FeatureUpdater {
     }
 
     private List<Feature> getRemoteFeatures(String projectName) {
-        return unleashClient.getFeatures(projectName, sessionManager.getUnleashSessionCookie()).features();
+        return unleashClient.getFeatures(projectName, sessionManager.parseUnleashSession()).features();
     }
 
     private CompareResult compareFeatures(Feature local, Feature remote) {
@@ -110,28 +110,28 @@ public class FeatureUpdater {
         }
     }
 
-    public void createFeature(Feature createFeatureTask, String project) {
+    private void createFeature(Feature createFeatureTask, String project) {
         CreateFeatureDto createFeatureDto = new CreateFeatureDto(
                 createFeatureTask.name(),
                 createFeatureTask.type(),
                 createFeatureTask.description(),
                 createFeatureTask.tags());
 
-        unleashClient.createFeature(project, createFeatureDto, sessionManager.getUnleashSessionCookie());
+        unleashClient.createFeature(project, createFeatureDto, sessionManager.parseUnleashSession());
 
         log.info("Feature created: {}", createFeatureDto.name());
     }
 
-    public void updateFeature(Feature updateFeatureTask, String project) {
+    private void updateFeature(Feature updateFeatureTask, String project) {
         unleashClient.updateFeature(project, updateFeatureTask.name(), new UpdateFeatureDto(
                 updateFeatureTask.type(),
-                updateFeatureTask.description()), sessionManager.getUnleashSessionCookie());
+                updateFeatureTask.description()), sessionManager.parseUnleashSession());
         log.info("Feature updated: {}", updateFeatureTask.name());
     }
 
-    public void deleteFeature(Feature deleteFeatureTask, String project) {
-        unleashClient.archiveFeature(project, deleteFeatureTask.name(), sessionManager.getUnleashSessionCookie());
-        unleashClient.deleteFeature(deleteFeatureTask.name(), sessionManager.getUnleashSessionCookie());
+    private void deleteFeature(Feature deleteFeatureTask, String project) {
+        unleashClient.archiveFeature(project, deleteFeatureTask.name(), sessionManager.parseUnleashSession());
+        unleashClient.deleteFeature(deleteFeatureTask.name(), sessionManager.parseUnleashSession());
 
         log.info("Feature deleted: {}", deleteFeatureTask.name());
     }
