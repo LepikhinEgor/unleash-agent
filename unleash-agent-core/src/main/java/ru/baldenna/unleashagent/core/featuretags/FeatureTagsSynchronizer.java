@@ -26,25 +26,30 @@ public class FeatureTagsSynchronizer {
     final UnleashSessionManager unleashSessionManager;
 
     public void synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
-        log.info("Check unleash feature tags for update");
-        var remoteFeaturesWithTags = getRemoteFeatures(projectName)
-                .features().stream()
-                .collect(Collectors.toMap(Feature::name, Feature::tags));
-        var localFeaturesWithTags = newConfiguration.features().stream()
-                .collect(Collectors.toMap(Feature::name, Feature::tags));
+        try {
+            log.info("Check unleash feature tags for update");
+            var remoteFeatures = getRemoteFeatures(projectName)
+                    .features().stream()
+                    .collect(Collectors.toMap(Feature::name, Feature::tags));
+            var localFeatures = newConfiguration.features().stream()
+                    .collect(Collectors.toMap(Feature::name, Feature::tags));
 
-        var featureTagsToCreate = getMissedFeatureTags(localFeaturesWithTags, remoteFeaturesWithTags);
-        var featureTagsToDelete = getMissedFeatureTags(remoteFeaturesWithTags, localFeaturesWithTags);
+            var featureTagsToCreate = getMissedFeatureTags(localFeatures, remoteFeatures);
+            var featureTagsToDelete = getMissedFeatureTags(remoteFeatures, localFeatures);
 
-        if (featureTagsToCreate.size() + featureTagsToDelete.size() != 0) {
-            log.info("Feature tag states was compared. Count to create = {}, count to delete = {}",
-                    featureTagsToCreate.size(), featureTagsToDelete.size());
-        } else {
-            log.info("Unleash features tags already up to date");
+            if (featureTagsToCreate.size() + featureTagsToDelete.size() != 0) {
+                log.info("Feature tag states was compared. Count to create = {}, count to delete = {}",
+                        featureTagsToCreate.size(), featureTagsToDelete.size());
+            } else {
+                log.info("Unleash features tags already up to date");
+            }
+
+            featureTagsToCreate.forEach(this::addTagToFeature);
+            featureTagsToDelete.forEach(this::deleteTagFromFeature);
+        } catch (Exception e) {
+            log.warn("Error while feature tags synchronization in project {}", projectName);
+            log.debug(e.getMessage(), e);
         }
-
-        featureTagsToCreate.forEach(this::addTagToFeature);
-        featureTagsToDelete.forEach(this::deleteTagFromFeature);
     }
 
     private FeaturesResponse getRemoteFeatures(String projectName) {
@@ -71,23 +76,35 @@ public class FeatureTagsSynchronizer {
     }
 
     private void addTagToFeature(FeatureTag featureTag) {
-        unleashClient.addTagToFeature(
-                featureTag.feature(),
-                new Tag(featureTag.tagValue(), featureTag.tagType()),
-                unleashSessionManager.getSessionCookie()
-        );
-        log.info("Tag {}:{} for feature {} was added",
-                featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+        try {
+            unleashClient.addTagToFeature(
+                    featureTag.feature(),
+                    new Tag(featureTag.tagValue(), featureTag.tagType()),
+                    unleashSessionManager.getSessionCookie()
+            );
+            log.info("Tag {}:{} for feature {} was added",
+                    featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+        } catch (Exception e) {
+            log.warn("Error adding tag {}:{} for feature {}",
+                    featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+            log.debug(e.getMessage(), e);
+        }
     }
 
     private void deleteTagFromFeature(FeatureTag featureTag) {
-        unleashClient.deleteTagFromFeature(
-                featureTag.feature(),
-                featureTag.tagType(),
-                featureTag.tagValue(),
-                unleashSessionManager.getSessionCookie()
-        );
-        log.info("Tag {}:{} for feature {} was deleted",
-                featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+        try {
+            unleashClient.deleteTagFromFeature(
+                    featureTag.feature(),
+                    featureTag.tagType(),
+                    featureTag.tagValue(),
+                    unleashSessionManager.getSessionCookie()
+            );
+            log.info("Tag {}:{} for feature {} was deleted",
+                    featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+        } catch (Exception e) {
+            log.warn("Error removing tag {}:{} from feature {}",
+                    featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+            log.debug(e.getMessage(), e);
+        }
     }
 }
