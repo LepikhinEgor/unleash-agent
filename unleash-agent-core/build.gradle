@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'checkstyle'
+    id 'jacoco'
 }
 
 group = 'ru.baldenna'
@@ -36,6 +37,15 @@ dependencies {
 
 checkstyle {
     toolVersion = '11.0.0'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
 }
 
 test {
