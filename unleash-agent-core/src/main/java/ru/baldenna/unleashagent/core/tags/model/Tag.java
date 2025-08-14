@@ -1,7 +1,8 @@
 package ru.baldenna.unleashagent.core.tags.model;
 
 
-public record Tag (
-    String value,
-    String type
-) {}
+public record Tag(
+        String value,
+        String type
+) {
+}

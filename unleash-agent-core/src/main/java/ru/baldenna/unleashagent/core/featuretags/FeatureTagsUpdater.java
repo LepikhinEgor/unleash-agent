@@ -2,12 +2,13 @@ package ru.baldenna.unleashagent.core.featuretags;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
-import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
+import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.configuration.UnleashProjectConfiguration;
 import ru.baldenna.unleashagent.core.features.model.Feature;
+import ru.baldenna.unleashagent.core.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,12 +19,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FeatureTagsUpdater {
 
+
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void update( String projectName, UnleashProjectConfiguration newConfiguration) {
+    public void update(String projectName, UnleashProjectConfiguration newConfiguration) {
         log.info("Check unleash feature tags for update");
-        var remoteFeaturesWithTags = unleashClient.getFeatures(10000, "IS:"+ projectName, unleashSessionManager.getUnleashSessionCookie())
+        var remoteFeaturesWithTags = getRemoteFeatures(projectName)
                 .features().stream()
                 .collect(Collectors.toMap(Feature::name, Feature::tags));
         var localFeaturesWithTags = newConfiguration.features().stream()
@@ -32,14 +34,19 @@ public class FeatureTagsUpdater {
         var featureTagsToCreate = getMissedFeatureTags(localFeaturesWithTags, remoteFeaturesWithTags);
         var featureTagsToDelete = getMissedFeatureTags(remoteFeaturesWithTags, localFeaturesWithTags);
 
-        if (featureTagsToCreate.size()  + featureTagsToDelete.size() != 0) {
-            log.info("Feature tag states was compared. Count to create = {}, count to delete = {}", featureTagsToCreate.size(), featureTagsToDelete.size());
+        if (featureTagsToCreate.size() + featureTagsToDelete.size() != 0) {
+            log.info("Feature tag states was compared. Count to create = {}, count to delete = {}",
+                    featureTagsToCreate.size(), featureTagsToDelete.size());
         } else {
             log.info("Unleash features tags already up to date");
         }
 
         featureTagsToCreate.forEach(this::addTagToFeature);
         featureTagsToDelete.forEach(this::deleteTagFromFeature);
+    }
+
+    private FeaturesResponse getRemoteFeatures(String projectName) {
+        return unleashClient.getFeatures(projectName, unleashSessionManager.getUnleashSessionCookie());
     }
 
     /**
@@ -53,7 +60,9 @@ public class FeatureTagsUpdater {
             HashSet<Tag> remoteTags = targetFeaturesWithTags.get(featureName);
             localTags.stream()
                     .filter(localTag -> !remoteTags.contains(localTag))
-                    .forEach(localTag -> featuresWithExtraTag.add(new FeatureTag(featureName, localTag.value(), localTag.type())));
+                    .forEach(localTag -> featuresWithExtraTag.add(
+                            new FeatureTag(featureName, localTag.value(), localTag.type()))
+                    );
         });
 
         return featuresWithExtraTag;
@@ -65,7 +74,8 @@ public class FeatureTagsUpdater {
                 new Tag(featureTag.tagValue(), featureTag.tagType()),
                 unleashSessionManager.getUnleashSessionCookie()
         );
-        log.info("Tag {}:{} for feature {} was added", featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+        log.info("Tag {}:{} for feature {} was added",
+                featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
     }
 
     private void deleteTagFromFeature(FeatureTag featureTag) {
@@ -75,6 +85,7 @@ public class FeatureTagsUpdater {
                 featureTag.tagValue(),
                 unleashSessionManager.getUnleashSessionCookie()
         );
-        log.info("Tag {}:{} for feature {} was deleted", featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
+        log.info("Tag {}:{} for feature {} was deleted",
+                featureTag.tagType(), featureTag.tagValue(), featureTag.feature());
     }
 }

@@ -1,14 +1,12 @@
 package ru.baldenna.unleashagent.core;
 
 import org.junit.jupiter.api.Test;
-import ru.baldenna.unleashagent.core.tags.model.Tag;
-import ru.baldenna.unleashagent.core.tagtypes.TagType;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FeatureTagUpdateTests extends UnleashAbstractTest{
+public class FeatureTagUpdateTests extends UnleashAbstractTest {
 
     @Test
     public void shouldCreateFeatureTag_whenFeatureTagNotExistsInUnleash() throws IOException {
@@ -32,9 +30,9 @@ public class FeatureTagUpdateTests extends UnleashAbstractTest{
         // given
         var configuration = parseUnleashConfigFile("FeatureWithTagConfig.yaml");
         var projectName = getProjectName(configuration);
-        createFeature("test-feature", "release", "This is feature for test feature creation",projectName);
+        createFeature("test-feature", "release", "This is feature for test feature creation", projectName);
         createTagType("custom", "Custom tag type");
-        addTagToFeature("test-feature","beta", "custom");
+        addTagToFeature("test-feature", "beta", "custom");
 
         // when
         unleashAgent.synchronizeConfiguration(configuration);

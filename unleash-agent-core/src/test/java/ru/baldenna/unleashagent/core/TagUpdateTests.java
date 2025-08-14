@@ -1,8 +1,6 @@
 package ru.baldenna.unleashagent.core;
 
 import org.junit.jupiter.api.Test;
-import ru.baldenna.unleashagent.core.tags.model.Tag;
-import ru.baldenna.unleashagent.core.tagtypes.TagType;
 
 import java.io.IOException;
 

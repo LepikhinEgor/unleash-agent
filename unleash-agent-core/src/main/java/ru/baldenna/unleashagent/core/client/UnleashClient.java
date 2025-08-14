@@ -16,15 +16,17 @@ import ru.baldenna.unleashagent.core.tagtypes.TagTypes;
 
 public interface UnleashClient {
 
+    int FEATURES_LIMIT = 100000;
+
     @RequestLine("POST /auth/simple/login")
     @Headers("Content-Type: application/json")
     Response login(LoginRequest loginRequest);
 
     @RequestLine("POST /api/admin/projects/{projectId}/features")
     @Headers({
-        "Content-Type: application/json",
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void createFeature(
             @Param("projectId") String projectId,
@@ -34,14 +36,19 @@ public interface UnleashClient {
 
     @RequestLine("GET /api/admin/search/features?limit={limit}&project={project}")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     FeaturesResponse getFeatures(
             @Param("limit") int limit,
             @Param("project") String project,
             @Param("sessionCookie") String sessionCookie
     );
+
+    default FeaturesResponse getFeatures(String project, String sessionCookie) {
+        return getFeatures(FEATURES_LIMIT, "IS:" + project, sessionCookie);
+    }
+
     @RequestLine("GET /api/admin/search/features?limit={limit}&project={project}")
     @Headers({
             "Accept: application/json",
@@ -55,8 +62,8 @@ public interface UnleashClient {
 
     @RequestLine("DELETE /api/admin/projects/{projectId}/features/{featureName}")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void archiveFeature(
             @Param("projectId") String projectId,
@@ -66,8 +73,8 @@ public interface UnleashClient {
 
     @RequestLine("DELETE /api/admin/archive/{featureName}")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void deleteFeature(
             @Param("featureName") String featureName,
@@ -77,9 +84,9 @@ public interface UnleashClient {
 
     @RequestLine("PUT /api/admin/projects/{projectId}/features/{featureName}")
     @Headers({
-        "Content-Type: application/json",
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void updateFeature(
             @Param("projectId") String projectId,
@@ -90,8 +97,8 @@ public interface UnleashClient {
 
     @RequestLine("GET /api/admin/tags")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     TagListResponse getTags(
             @Param("sessionCookie") String sessionCookie
@@ -99,8 +106,8 @@ public interface UnleashClient {
 
     @RequestLine("DELETE /api/admin/tags/{type}/{value}")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void deleteTag(
             @Param("type") String type,
@@ -110,9 +117,9 @@ public interface UnleashClient {
 
     @RequestLine("POST /api/admin/tags")
     @Headers({
-        "Content-Type: application/json",
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void createTag(
             Tag tagRequest,
@@ -121,8 +128,8 @@ public interface UnleashClient {
 
     @RequestLine("GET /api/admin/tag-types")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     TagTypes getTagTypes(
             @Param("sessionCookie") String sessionCookie
@@ -130,30 +137,30 @@ public interface UnleashClient {
 
     @RequestLine("POST /api/admin/tag-types")
     @Headers({
-        "Content-Type: application/json",
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void createTagType(
-        TagType tagType,
-        @Param("sessionCookie") String sessionCookie
+            TagType tagType,
+            @Param("sessionCookie") String sessionCookie
     );
 
     @RequestLine("DELETE /api/admin/tag-types/{name}")
     @Headers({
-        "Cookie: unleash-session={sessionCookie}",
-        "Accept: application/json"
+            "Cookie: unleash-session={sessionCookie}",
+            "Accept: application/json"
     })
     void deleteTagType(
-        @Param("name") String name,
-        @Param("sessionCookie") String sessionCookie
+            @Param("name") String name,
+            @Param("sessionCookie") String sessionCookie
     );
 
     @RequestLine("POST /api/admin/features/{featureName}/tags")
     @Headers({
-        "Content-Type: application/json",
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void addTagToFeature(
             @Param("featureName") String featureName,
@@ -164,8 +171,8 @@ public interface UnleashClient {
 
     @RequestLine("DELETE /api/admin/features/{featureName}/tags/{type}/{value}")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     void deleteTagFromFeature(
             @Param("featureName") String featureName,
@@ -176,8 +183,8 @@ public interface UnleashClient {
 
     @RequestLine("GET /api/admin/projects")
     @Headers({
-        "Accept: application/json",
-        "Cookie: unleash-session={sessionCookie}"
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
     })
     ProjectsResponse getProjects(@Param("sessionCookie") String sessionCookie);
 

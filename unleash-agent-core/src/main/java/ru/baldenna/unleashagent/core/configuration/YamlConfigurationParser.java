@@ -6,7 +6,7 @@ import lombok.SneakyThrows;
 
 public class YamlConfigurationParser {
 
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     @SneakyThrows
     public UnleashConfiguration parse(String yaml) {

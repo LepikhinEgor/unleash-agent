@@ -1,20 +1,20 @@
 package ru.baldenna.unleashagent.core;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import ru.baldenna.unleashagent.core.common.UnleashUpdaters;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UnleashAgent {
 
-    UnleashUpdaters updaters;
+    private final UnleashUpdaters updaters;
 
-    public void synchronizeConfiguration(UnleashConfiguration unleashConfiguration){
+    public void synchronizeConfiguration(UnleashConfiguration unleashConfiguration) {
         updaters.tagUpdater().update(unleashConfiguration);
 
         unleashConfiguration.projects().forEach((projectName, projectConfiguration) -> {
-                updaters.featureUpdater().update(projectName, projectConfiguration);
-                updaters.featureTagUpdater().update(projectName, projectConfiguration);
+            updaters.featureUpdater().update(projectName, projectConfiguration);
+            updaters.featureTagUpdater().update(projectName, projectConfiguration);
         });
     }
 

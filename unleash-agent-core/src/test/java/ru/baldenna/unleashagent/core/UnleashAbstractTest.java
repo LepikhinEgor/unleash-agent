@@ -1,14 +1,10 @@
 package ru.baldenna.unleashagent.core;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
-import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.DockerImageName;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
@@ -24,7 +20,6 @@ import ru.baldenna.unleashagent.core.tagtypes.TagType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 
@@ -69,7 +64,7 @@ class UnleashAbstractTest {
     }
 
     UnleashAbstractTest() {
-        unleashClient = new UnleashClientFactory().buildClient("http://"+unleashContainer.getHost()+":4242");
+        unleashClient = new UnleashClientFactory().buildClient("http://" + unleashContainer.getHost() + ":4242");
         sessionManager = new UnleashSessionManager(unleashClient, "admin", "unleash4all");
         unleashAgent = new UnleashAgent(new UnleashUpdatersFactory(unleashClient, sessionManager).buildUpdaters());
     }
@@ -92,7 +87,7 @@ class UnleashAbstractTest {
         getTagTypes().stream()
                 .filter(tagType -> !tagType.name().equals("simple"))
                 .forEach(tagType ->
-                unleashClient.deleteTagType(tagType.name(), sessionManager.getUnleashSessionCookie()));
+                        unleashClient.deleteTagType(tagType.name(), sessionManager.getUnleashSessionCookie()));
     }
 
     protected List<TagType> getTagTypes() {

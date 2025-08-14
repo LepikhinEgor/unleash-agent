@@ -1,8 +1,6 @@
 package ru.baldenna.unleashagent.core.features.model;
 
 
-import ru.baldenna.unleashagent.core.features.model.Feature;
-
 import java.util.List;
 
 
