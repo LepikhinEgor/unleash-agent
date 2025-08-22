@@ -28,7 +28,7 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
 
     @ParameterizedTest
     @MethodSource("staleSegments")
-    public void shouldUpdateSegment_whenSegmentWithSameNameExistsInUnleash(Segment staleSegment)  {
+    public void shouldUpdateSegment_whenSegmentWithSameNameExistsInUnleash(Segment staleSegment) {
         // given
         var configuration = parseUnleashConfigFile("OneSegmentConfig.yaml");
         createSegment(staleSegment.name(), staleSegment.description(), staleSegment.project(),
@@ -48,9 +48,9 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
         // given
         var configuration = parseUnleashConfigFile("OneSegmentConfig.yaml");
         createSegment("beta-testers", "Old description", "default",
-                List.of(new SegmentConstraint("appName","IN", true, false, List.of("test-app"))) );
+                List.of(new SegmentConstraint("appName", "IN", true, false, List.of("test-app"))));
         createSegment("unknown-segment", "Old description", "default",
-                List.of(new SegmentConstraint("appName","IN", true, false, List.of("test-app"))) );
+                List.of(new SegmentConstraint("appName", "IN", true, false, List.of("test-app"))));
 
 
         // when
@@ -75,27 +75,35 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
         assertThat(firstConstraint.caseInsensitive()).isTrue();
         assertThat(firstConstraint.inverted()).isFalse();
         assertThat(firstConstraint.values()).hasSize(5);
-        assertThat(firstConstraint.values()).containsAll(List.of("user1","user2","user3","user4","user5"));
+        assertThat(firstConstraint.values()).containsAll(List.of("user1", "user2", "user3", "user4", "user5"));
     }
 
+    @SuppressWarnings("checkstyle:linelength")
     static List<Segment> staleSegments() {
         return List.of(
-                new Segment(1, "beta-testers", "Old description", actualConstraints(), "default"),
-                new Segment(1, "beta-testers", "Beta testers which test unreleased features", actualConstraints(), null),
-                new Segment(1, "beta-testers", "Beta testers which test unreleased features", actualConstraints().subList(0,1), "default"),
-                new Segment(1, "beta-testers", "Beta testers which test unreleased features", staleConstraints(), "default")
+                new Segment(1, "beta-testers",
+                        "Old description", actualConstraints(), "default"),
+                new Segment(1, "beta-testers",
+                        "Beta testers which test unreleased features", actualConstraints(), null),
+                new Segment(1, "beta-testers",
+                        "Beta testers which test unreleased features", actualConstraints().subList(0, 1), "default"),
+                new Segment(1, "beta-testers",
+                        "Beta testers which test unreleased features", staleConstraints(), "default")
         );
     }
 
     private static List<SegmentConstraint> actualConstraints() {
         return List.of(
-                new SegmentConstraint("userId", "IN", true, false, List.of("user1","user2","user3","user4","user5")),
-                new SegmentConstraint("environment", "NOT_IN", true, true, List.of("test1","test2"))
+                new SegmentConstraint("userId", "IN", true, false,
+                        List.of("user1", "user2", "user3", "user4", "user5")),
+                new SegmentConstraint("environment", "NOT_IN", true, true,
+                        List.of("test1", "test2"))
         );
     }
+
     private static List<SegmentConstraint> staleConstraints() {
         return List.of(
-                new SegmentConstraint("userId", "IN", true, false, List.of("user1","user2","user3","user4")),
+                new SegmentConstraint("userId", "IN", true, false, List.of("user1", "user2", "user3", "user4")),
                 new SegmentConstraint("environment", "NOT_IN", true, true, List.of("test1"))
         );
     }

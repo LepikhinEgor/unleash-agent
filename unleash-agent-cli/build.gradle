@@ -18,6 +18,8 @@ dependencies {
 }
 
 jar {
+//    dependsOn project(':unleash-agent-core')
+    dependsOn ':unleash-agent-core:build'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes(
@@ -28,6 +30,7 @@ jar {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
+
 
 test {
     useJUnitPlatform()

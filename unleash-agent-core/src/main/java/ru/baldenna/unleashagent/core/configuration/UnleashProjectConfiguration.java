@@ -1,7 +1,6 @@
 package ru.baldenna.unleashagent.core.configuration;
 
 import ru.baldenna.unleashagent.core.features.model.Feature;
-import ru.baldenna.unleashagent.core.segments.model.Segment;
 
 import java.util.List;
 import java.util.Optional;

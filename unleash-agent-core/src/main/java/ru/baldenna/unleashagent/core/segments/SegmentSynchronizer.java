@@ -38,26 +38,30 @@ public class SegmentSynchronizer {
                             .findFirst()
                             .orElseThrow();
                     if (!isSegmentEquals(localSegment, existingSegment)) {
-                        log.info("Segment {} with name {} needs to be updated", localSegment.name(), localSegment.name());
+                        log.info("Segment {} with name {} needs to be updated",
+                                localSegment.name(), localSegment.name());
                         segmentsToUpdate.add(new Segment(localSegment, existingSegment.id()));
                     } else {
-                        log.debug("Segment {} with name {} already exists and is up to date", localSegment.name(), localSegment.name());
+                        log.debug("Segment {} with name {} already exists and is up to date",
+                                localSegment.name(), localSegment.name());
                     }
                 } else {
-                    log.info("Segment {} with name {} not found in Unleash and needs to be created", localSegment.name(), localSegment.name());
+                    log.info("Segment {} with name {} not found in Unleash and needs to be created",
+                            localSegment.name(), localSegment.name());
                     segmentsToCreate.add(localSegment);
                 }
             }
 
             for (Segment remoteSegment : remoteSegments) {
-                if (localSegments.stream().noneMatch(localSegment -> localSegment.name().equals(remoteSegment.name()))) {
-                    log.info("Segment {} with name {} exists in Unleash but not declared in local config. Segment will be deleted", remoteSegment.name(), remoteSegment.name());
+                if (localSegments.stream().noneMatch(local -> local.name().equals(remoteSegment.name()))) {
+                    log.info("Segment {} with name {} exists in Unleash but not declared in local config." +
+                            " Segment will be deleted", remoteSegment.name(), remoteSegment.name());
                     segmentsToDelete.add(remoteSegment);
                 }
             }
 
             if (segmentsToCreate.size() + segmentsToUpdate.size() + segmentsToDelete.size() != 0) {
-                log.info("Segment states were compared. Count to create = {}, count to update = {}, count to delete = {}",
+                log.info("Segment states were compared. To create = {}, to update = {}, to delete = {}",
                         segmentsToCreate.size(), segmentsToUpdate.size(), segmentsToDelete.size());
             } else {
                 log.info("Unleash segments are already up to date");
@@ -75,20 +79,23 @@ public class SegmentSynchronizer {
     private boolean isSegmentEquals(Segment localSegment, Segment remoteSegment) {
         var segmentEquals = true;
         // Compare name
-        if (notEquals(localSegment.name(),(remoteSegment.name()))) {
-            log.info("Segments differ in 'name' field: local={}, remote={}", localSegment.name(), remoteSegment.name());
+        if (notEquals(localSegment.name(), (remoteSegment.name()))) {
+            log.info("Segments differ in 'name' field: local={}, remote={}",
+                    localSegment.name(), remoteSegment.name());
             segmentEquals = false;
         }
 
         // Compare description
-        if (notEquals(localSegment.description(),(remoteSegment.description()))) {
-            log.info("Segments differ in 'description' field: local={}, remote={}", localSegment.description(), remoteSegment.description());
+        if (notEquals(localSegment.description(), (remoteSegment.description()))) {
+            log.info("Segments differ in 'description' field: local={}, remote={}",
+                    localSegment.description(), remoteSegment.description());
             segmentEquals = false;
         }
 
         // Compare project
-        if (notEquals(localSegment.project(),(remoteSegment.project()))) {
-            log.info("Segments differ in 'project' field: local={}, remote={}", localSegment.project(), remoteSegment.project());
+        if (notEquals(localSegment.project(), (remoteSegment.project()))) {
+            log.info("Segments differ in 'project' field: local={}, remote={}",
+                    localSegment.project(), remoteSegment.project());
             segmentEquals = false;
         }
 
@@ -96,14 +103,16 @@ public class SegmentSynchronizer {
         var localConstraints = localSegment.constraints();
         var remoteConstraints = remoteSegment.constraints();
         if (localConstraints.size() != remoteConstraints.size()) {
-            log.info("Segments differ in 'constraints' count: local={}, remote={}", localConstraints.size(), remoteConstraints.size());
+            log.info("Segments differ in 'constraints' count: local={}, remote={}",
+                    localConstraints.size(), remoteConstraints.size());
             return false;
         }
         for (int i = 0; i < localConstraints.size(); i++) {
             var localConstraint = localConstraints.get(i);
             var remoteConstraint = remoteConstraints.get(i);
             if (notEquals(localConstraint, (remoteConstraint))) {
-                log.info("Segments differ in 'constraints' at index {}: local={}, remote={}", i, localConstraint, remoteConstraint);
+                log.info("Segments differ in 'constraints' at index {}: local={}, remote={}",
+                        i, localConstraint, remoteConstraint);
                 segmentEquals = false;
             }
         }
@@ -123,19 +132,29 @@ public class SegmentSynchronizer {
     }
 
     private boolean notEquals(Object local, Object remote) {
-        return !equals(local,remote);
+        return !equals(local, remote);
     }
 
     private void createSegment(Segment segment) {
         unleashClient.createSegment(
-                new CreateSegmentRequest(segment.name(), segment.description(), segment.project(), segment.constraints()),
-                unleashSessionManager.getSessionCookie() );
+                new CreateSegmentRequest(
+                        segment.name(),
+                        segment.description(),
+                        segment.project(),
+                        segment.constraints()
+                ),
+                unleashSessionManager.getSessionCookie());
     }
 
     private void updateSegment(Segment segment) {
         unleashClient.updateSegment(
                 segment.id(),
-                new UpdateSegmentRequest(segment.name(), segment.description(), segment.project(), segment.constraints()),
+                new UpdateSegmentRequest(
+                        segment.name(),
+                        segment.description(),
+                        segment.project(),
+                        segment.constraints()
+                ),
                 unleashSessionManager.getSessionCookie());
     }
 

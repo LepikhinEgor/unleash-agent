@@ -94,7 +94,9 @@ class AbstractUnleashTest {
                 .forEach(tagType ->
                         unleashClient.deleteTagType(tagType.name(), sessionManager.getSessionCookie()));
 
-        getUnleashSegments().forEach(segment -> unleashClient.deleteSegment(segment.id(), sessionManager.getSessionCookie()));
+        getUnleashSegments().forEach(segment ->
+                unleashClient.deleteSegment(segment.id(), sessionManager.getSessionCookie())
+        );
     }
 
     protected List<TagType> getTagTypes() {
@@ -145,8 +147,11 @@ class AbstractUnleashTest {
         return configuration.projects().keySet().stream().findFirst().orElseThrow();
     }
 
-    protected void createSegment(String name, String description, String project, List<SegmentConstraint> constraints) {
-        unleashClient.createSegment(new CreateSegmentRequest(name, description, project, constraints), sessionManager.getSessionCookie());
+    protected void createSegment(String name, String description,
+                                 String project, List<SegmentConstraint> constraints) {
+        unleashClient.createSegment(
+                new CreateSegmentRequest(name, description, project, constraints), sessionManager.getSessionCookie()
+        );
     }
 
 }

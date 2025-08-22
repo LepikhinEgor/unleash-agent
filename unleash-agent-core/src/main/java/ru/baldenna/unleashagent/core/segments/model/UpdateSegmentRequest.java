@@ -8,5 +8,4 @@ public record UpdateSegmentRequest(
     String project,
     List<SegmentConstraint> constraints
 ) {
-
 }

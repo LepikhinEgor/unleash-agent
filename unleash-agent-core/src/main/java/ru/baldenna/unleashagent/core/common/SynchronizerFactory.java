@@ -26,6 +26,11 @@ public class SynchronizerFactory {
         var featureSynchronizer = new FeatureSynchronizer(unleashClient, unleashSessionManager);
         var featureTagSynchronizer = new FeatureTagsSynchronizer(unleashClient, unleashSessionManager);
 
-        return new UnleashSynchronizers(tagSynchronizer, segmentSynchronizer, featureSynchronizer, featureTagSynchronizer);
+        return new UnleashSynchronizers(
+                tagSynchronizer,
+                segmentSynchronizer,
+                featureSynchronizer,
+                featureTagSynchronizer
+        );
     }
 }
