@@ -30,6 +30,7 @@ public class UnleashAgentCli {
 
         UnleashAgent unleashAgent = new UnleashAgent(synchronizerFactory.buildUpdaters());
 
+        System.out.println("Start synchronization for unleash " + cliArgs.unleashUrl());
         unleashAgent.synchronizeConfiguration(newUnleashConfiguration);
     }
 
