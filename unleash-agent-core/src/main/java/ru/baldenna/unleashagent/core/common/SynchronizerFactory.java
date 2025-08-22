@@ -5,6 +5,7 @@ import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.features.FeatureSynchronizer;
 import ru.baldenna.unleashagent.core.featuretags.FeatureTagsSynchronizer;
+import ru.baldenna.unleashagent.core.segments.SegmentSynchronizer;
 import ru.baldenna.unleashagent.core.tags.TagSynchronizer;
 
 /**
@@ -20,10 +21,11 @@ public class SynchronizerFactory {
 
     public UnleashSynchronizers buildUpdaters() {
 
-        var tagUpdater = new TagSynchronizer(unleashClient, unleashSessionManager);
-        var featureUpdater = new FeatureSynchronizer(unleashClient, unleashSessionManager);
-        var featureTagUpdater = new FeatureTagsSynchronizer(unleashClient, unleashSessionManager);
+        var tagSynchronizer = new TagSynchronizer(unleashClient, unleashSessionManager);
+        var segmentSynchronizer = new SegmentSynchronizer(unleashClient, unleashSessionManager);
+        var featureSynchronizer = new FeatureSynchronizer(unleashClient, unleashSessionManager);
+        var featureTagSynchronizer = new FeatureTagsSynchronizer(unleashClient, unleashSessionManager);
 
-        return new UnleashSynchronizers(tagUpdater, featureUpdater, featureTagUpdater);
+        return new UnleashSynchronizers(tagSynchronizer, segmentSynchronizer, featureSynchronizer, featureTagSynchronizer);
     }
 }

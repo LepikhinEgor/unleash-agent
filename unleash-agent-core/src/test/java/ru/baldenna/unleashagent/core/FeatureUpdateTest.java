@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FeatureUpdateTest extends UnleashAbstractTest {
+public class FeatureUpdateTest extends AbstractUnleashTest {
 
     @Test
     public void shouldCreateFeature_whenFeatureNotExistsInUnleash() throws IOException {

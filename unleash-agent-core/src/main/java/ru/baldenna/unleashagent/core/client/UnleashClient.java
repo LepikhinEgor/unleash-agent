@@ -10,6 +10,7 @@ import ru.baldenna.unleashagent.core.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
 import ru.baldenna.unleashagent.core.projects.ProjectsResponse;
 import ru.baldenna.unleashagent.core.segments.model.CreateSegmentRequest;
+import ru.baldenna.unleashagent.core.segments.model.SegmentListResponse;
 import ru.baldenna.unleashagent.core.segments.model.UpdateSegmentRequest;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
@@ -207,7 +208,7 @@ public interface UnleashClient {
             "Cookie: unleash-session={sessionCookie}",
             "Accept: application/json"
     })
-    void deleteSegment(@Param("id") String segmentId, @Param("sessionCookie") String sessionCookie);
+    void deleteSegment(@Param("id") Integer segmentId, @Param("sessionCookie") String sessionCookie);
 
     @RequestLine("PUT /api/admin/segments/{id}")
     @Headers({
@@ -216,10 +217,17 @@ public interface UnleashClient {
             "Cookie: unleash-session={sessionCookie}"
     })
     void updateSegment(
-            @Param("id") String segmentId,
+            @Param("id") Integer segmentId,
             UpdateSegmentRequest updatedSegment,
             @Param("sessionCookie") String sessionCookie
     );
+
+    @RequestLine("GET /api/admin/segments")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    SegmentListResponse getSegments(@Param("sessionCookie") String sessionCookie);
 
 
 }

@@ -14,6 +14,9 @@ import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.Feature;
+import ru.baldenna.unleashagent.core.segments.model.CreateSegmentRequest;
+import ru.baldenna.unleashagent.core.segments.model.Segment;
+import ru.baldenna.unleashagent.core.segments.model.SegmentConstraint;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
 
@@ -24,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 
 
-class UnleashAbstractTest {
+class AbstractUnleashTest {
 
     private static Network network = Network.newNetwork();
 
@@ -58,12 +61,14 @@ class UnleashAbstractTest {
         unleashContainer.addEnv("DATABASE_USERNAME", "unleash_user");
         unleashContainer.addEnv("DATABASE_SSL", "false");
         unleashContainer.addEnv("DATABASE_PASSWORD", "unleash_password");
+        unleashContainer.addEnv("SIMPLE_LOGIN_LIMIT_PER_MINUTE", "1000");
+        unleashContainer.addEnv("LOG_LEVEL", "debug");
         unleashContainer.setPortBindings(List.of("4242:4242"));
         unleashContainer.waitingFor(Wait.forHttp("/auth/simple/login"));
         unleashContainer.start();
     }
 
-    UnleashAbstractTest() {
+    AbstractUnleashTest() {
         unleashClient = new UnleashClientFactory().buildClient("http://" + unleashContainer.getHost() + ":4242");
         sessionManager = new UnleashSessionManager(unleashClient, "admin", "unleash4all");
         unleashAgent = new UnleashAgent(new SynchronizerFactory(unleashClient, sessionManager).buildUpdaters());
@@ -88,6 +93,8 @@ class UnleashAbstractTest {
                 .filter(tagType -> !tagType.name().equals("simple"))
                 .forEach(tagType ->
                         unleashClient.deleteTagType(tagType.name(), sessionManager.getSessionCookie()));
+
+        getUnleashSegments().forEach(segment -> unleashClient.deleteSegment(segment.id(), sessionManager.getSessionCookie()));
     }
 
     protected List<TagType> getTagTypes() {
@@ -102,10 +109,18 @@ class UnleashAbstractTest {
         return unleashClient.getFeatures(9999, "IS:" + project, sessionManager.getSessionCookie()).features();
     }
 
-    protected UnleashConfiguration parseUnleashConfigFile(String filePath) throws IOException {
+    protected List<Segment> getUnleashSegments() {
+        return unleashClient.getSegments(sessionManager.getSessionCookie()).segments();
+    }
+
+    protected UnleashConfiguration parseUnleashConfigFile(String filePath) {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(filePath).getFile());
-        return yamlConfigurationParser.parse(Files.readString(file.toPath()));
+        try {
+            return yamlConfigurationParser.parse(Files.readString(file.toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void createFeature(String name, String release, String description, String project) {
@@ -128,6 +143,10 @@ class UnleashAbstractTest {
 
     protected String getProjectName(UnleashConfiguration configuration) {
         return configuration.projects().keySet().stream().findFirst().orElseThrow();
+    }
+
+    protected void createSegment(String name, String description, String project, List<SegmentConstraint> constraints) {
+        unleashClient.createSegment(new CreateSegmentRequest(name, description, project, constraints), sessionManager.getSessionCookie());
     }
 
 }

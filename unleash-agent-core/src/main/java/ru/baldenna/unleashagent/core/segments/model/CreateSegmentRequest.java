@@ -1,18 +1,11 @@
 package ru.baldenna.unleashagent.core.segments.model;
 
+import java.util.List;
+
 public record CreateSegmentRequest(
         String name,
         String description,
         String project,
-        List<Constraint> constraints
+        List<SegmentConstraint> constraints
 ) {
-    public record Constraint(
-            String contextName,
-            String operator,
-            boolean caseInsensitive,
-            boolean inverted,
-            List<String> values
-    ) {
-        // Nested record for constraints
-    }
 }

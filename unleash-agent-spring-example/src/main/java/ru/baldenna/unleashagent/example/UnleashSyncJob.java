@@ -16,7 +16,7 @@ public class UnleashSyncJob {
         this.unleashConfiguration = unleashConfiguration;
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 20000)
     public void sync() {
         unleashAgent.synchronizeConfiguration(unleashConfiguration);
     }

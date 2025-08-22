@@ -11,6 +11,7 @@ public class UnleashAgent {
 
     public void synchronizeConfiguration(UnleashConfiguration unleashConfiguration) {
         updaters.tagSynchronizer().synchronize(unleashConfiguration);
+        updaters.segmentSynchronizer().synchronize(unleashConfiguration);
 
         unleashConfiguration.projects().forEach((projectName, projectConfiguration) -> {
             updaters.featureSynchronizer().synchronize(projectName, projectConfiguration);

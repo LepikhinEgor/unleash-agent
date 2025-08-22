@@ -1,5 +1,6 @@
 package ru.baldenna.unleashagent.core.configuration;
 
+import ru.baldenna.unleashagent.core.segments.model.Segment;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import static java.util.Collections.emptyList;
  */
 public record UnleashConfiguration(
         List<Tag> tags,
+        List<Segment> segments,
         Map<String, UnleashProjectConfiguration> projects
 ) {
 
@@ -22,6 +24,11 @@ public record UnleashConfiguration(
     @Override
     public List<Tag> tags() {
         return Optional.ofNullable(tags).orElse(emptyList());
+    }
+
+    @Override
+    public List<Segment> segments() {
+        return Optional.ofNullable(segments).orElse(emptyList());
     }
 
     @Override
