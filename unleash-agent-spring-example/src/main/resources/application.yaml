@@ -39,6 +39,16 @@ unleash:
             values:
               - "test1"
               - "test2"
+    contextFields:
+      - name: customerType
+        description: Customer type field
+        stickiness: false
+        sortOrder: 2
+        legalValues:
+          - { value: FL, description: Physical }
+          - { value: UL, description: Company }
+          - { value: IP, description: Individual entrepreneur }
+          - { value: NOT_CLIENT, description: Not client }
     projects:
       default:
         features:

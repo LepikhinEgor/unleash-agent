@@ -10,7 +10,7 @@ public record Segment(
         String project
 ) {
 
-    public Segment(Segment source, int id) {
-        this(id, source.name, source.description, source.constraints, source.project);
+    public Segment copyWithId(int id) {
+        return new Segment(id, name, description, constraints, project);
     }
 }

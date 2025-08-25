@@ -40,7 +40,7 @@ public class SegmentSynchronizer {
                     if (!isSegmentEquals(localSegment, existingSegment)) {
                         log.info("Segment {} with name {} needs to be updated",
                                 localSegment.name(), localSegment.name());
-                        segmentsToUpdate.add(new Segment(localSegment, existingSegment.id()));
+                        segmentsToUpdate.add(localSegment.copyWithId(existingSegment.id()));
                     } else {
                         log.debug("Segment {} with name {} already exists and is up to date",
                                 localSegment.name(), localSegment.name());

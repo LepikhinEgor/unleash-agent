@@ -5,6 +5,7 @@ import feign.Param;
 import feign.RequestLine;
 import feign.Response;
 import ru.baldenna.unleashagent.core.auth.LoginRequest;
+import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
@@ -16,6 +17,8 @@ import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
 import ru.baldenna.unleashagent.core.tagtypes.TagTypes;
+
+import java.util.List;
 
 /**
  * Unleash API client.
@@ -228,6 +231,40 @@ public interface UnleashClient {
             "Cookie: unleash-session={sessionCookie}"
     })
     SegmentListResponse getSegments(@Param("sessionCookie") String sessionCookie);
+
+    @RequestLine("GET /api/admin/context")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    List<ContextField> getContextFields(@Param("sessionCookie") String sessionCookie);
+
+    @RequestLine("POST /api/admin/context")
+    @Headers({
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void createContextField(ContextField contextField, @Param("sessionCookie") String sessionCookie);
+
+    @RequestLine("PUT /api/admin/context/{name}")
+    @Headers({
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void updateContextField(
+            @Param("name") String name,
+            ContextField updatedContextField,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("DELETE /api/admin/context/{name}")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void deleteContextField(@Param("name") String name, @Param("sessionCookie") String sessionCookie);
 
 
 }

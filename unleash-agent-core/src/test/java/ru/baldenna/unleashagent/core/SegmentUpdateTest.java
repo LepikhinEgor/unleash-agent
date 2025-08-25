@@ -78,7 +78,6 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
         assertThat(firstConstraint.values()).containsAll(List.of("user1", "user2", "user3", "user4", "user5"));
     }
 
-    @SuppressWarnings("checkstyle:linelength")
     static List<Segment> staleSegments() {
         return List.of(
                 new Segment(1, "beta-testers",

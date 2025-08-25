@@ -1,5 +1,6 @@
 package ru.baldenna.unleashagent.core.configuration;
 
+import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
 import ru.baldenna.unleashagent.core.segments.model.Segment;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 
@@ -16,6 +17,7 @@ import static java.util.Collections.emptyList;
 public record UnleashConfiguration(
         List<Tag> tags,
         List<Segment> segments,
+        List<ContextField> contextFields,
         Map<String, UnleashProjectConfiguration> projects
 ) {
 
@@ -29,6 +31,11 @@ public record UnleashConfiguration(
     @Override
     public List<Segment> segments() {
         return Optional.ofNullable(segments).orElse(emptyList());
+    }
+
+    @Override
+    public List<ContextField> contextFields() {
+        return Optional.ofNullable(contextFields).orElse(emptyList());
     }
 
     @Override
