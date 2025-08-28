@@ -48,9 +48,9 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
         // given
         var configuration = parseUnleashConfigFile("OneSegmentConfig.yaml");
         createSegment("beta-testers", "Old description", "default",
-                List.of(new FeatureConstraint("appName", "IN", true, false, List.of("test-app"))));
+                List.of(new FeatureConstraint("appName", "IN", true, false, List.of("test-app"), null)));
         createSegment("unknown-segment", "Old description", "default",
-                List.of(new FeatureConstraint("appName", "IN", true, false, List.of("test-app"))));
+                List.of(new FeatureConstraint("appName", "IN", true, false, List.of("test-app"), null)));
 
 
         // when
@@ -94,16 +94,16 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
     private static List<FeatureConstraint> actualConstraints() {
         return List.of(
                 new FeatureConstraint("userId", "IN", true, false,
-                        List.of("user1", "user2", "user3", "user4", "user5")),
+                        List.of("user1", "user2", "user3", "user4", "user5"), null),
                 new FeatureConstraint("environment", "NOT_IN", true, true,
-                        List.of("test1", "test2"))
+                        List.of("test1", "test2"), null)
         );
     }
 
     private static List<FeatureConstraint> staleConstraints() {
         return List.of(
-                new FeatureConstraint("userId", "IN", true, false, List.of("user1", "user2", "user3", "user4")),
-                new FeatureConstraint("environment", "NOT_IN", true, true, List.of("test1"))
+                new FeatureConstraint("userId", "IN", true, false, List.of("user1", "user2", "user3", "user4"), null),
+                new FeatureConstraint("environment", "NOT_IN", true, true, List.of("test1"), null)
         );
     }
 }

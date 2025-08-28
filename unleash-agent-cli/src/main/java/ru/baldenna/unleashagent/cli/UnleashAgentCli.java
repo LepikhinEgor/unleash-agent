@@ -11,6 +11,7 @@ import java.nio.file.Path;
 
 public class UnleashAgentCli {
 
+    // -f "/Users/lepikhine/projects/unleash-agent/unleash-agent-core/src/main/resources/UnleashConfigExample.yaml" -u "http://unleash.cbclusterint.alfaintra.net" -l "admin" -p "1231234"
     public static void main(String[] args) throws Exception {
 
         var cliArgsValidator = new CliArgsValidator();

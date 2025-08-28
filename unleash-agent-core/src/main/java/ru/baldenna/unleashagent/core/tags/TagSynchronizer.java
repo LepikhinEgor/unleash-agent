@@ -8,6 +8,8 @@ import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Synchronizes tags in Unleash with tags in the given configuration
@@ -22,8 +24,8 @@ public class TagSynchronizer {
     public void synchronize(UnleashConfiguration newConfiguration) {
         try {
             log.info("Check unleash tags for update");
-            var remoteTags = unleashClient.getTags(unleashSessionManager.getSessionCookie())
-                    .tags();
+            var remoteTags = Optional.ofNullable(unleashClient.getTags(unleashSessionManager.getSessionCookie())
+                    .tags()).orElse(Collections.emptyList());
             var localTags = newConfiguration.tags();
 
             var tagsToCreate = new ArrayList<Tag>();
