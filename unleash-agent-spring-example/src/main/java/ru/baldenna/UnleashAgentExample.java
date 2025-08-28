@@ -17,7 +17,8 @@ public class UnleashAgentExample {
 //curl --location --request POST 'http://localhost:4242/api/admin/projects/default/features/feature78/environments/development/strategies' \
 //    --header 'Authorization: INSERT_API_KEY' \
 //    --header 'Content-Type: application/json' \
-//    --data-raw '{
+//    --data-raw '
+//    {
 //  "name": "flexibleRollout",
 //  "constraints": [],
 //  "parameters": {
@@ -61,12 +62,13 @@ public class UnleashAgentExample {
 //    4
 //  ],
 //  "disabled": false
-//}'
-
-//curl --location --request PUT 'http://localhost:4242/api/admin/projects/default/features/feature78/environments/development/strategies/fcea9977-0d5e-4758-9b8f-5545a747cb63' \
-//    --header 'Authorization: INSERT_API_KEY' \
-//    --header 'Content-Type: application/json' \
-//    --data-raw '{
+//}
+//
+////curl --location --request PUT 'http://localhost:4242/api/admin/projects/default/features/feature78/environments/development/strategies/fcea9977-0d5e-4758-9b8f-5545a747cb63' \
+////    --header 'Authorization: INSERT_API_KEY' \
+////    --header 'Content-Type: application/json' \
+////    --data-raw '
+//    {
 //  "name": "flexibleRollout",
 //  "title": null,
 //  "constraints": [
@@ -90,4 +92,4 @@ public class UnleashAgentExample {
 //    4
 //  ],
 //  "disabled": false
-//}'
+//}

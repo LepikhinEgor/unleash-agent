@@ -16,7 +16,7 @@ import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.Feature;
 import ru.baldenna.unleashagent.core.segments.model.CreateSegmentRequest;
 import ru.baldenna.unleashagent.core.segments.model.Segment;
-import ru.baldenna.unleashagent.core.segments.model.SegmentConstraint;
+import ru.baldenna.unleashagent.core.segments.model.FeatureConstraint;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
 
@@ -148,7 +148,7 @@ class AbstractUnleashTest {
     }
 
     protected void createSegment(String name, String description,
-                                 String project, List<SegmentConstraint> constraints) {
+                                 String project, List<FeatureConstraint> constraints) {
         unleashClient.createSegment(
                 new CreateSegmentRequest(name, description, project, constraints), sessionManager.getSessionCookie()
         );

@@ -12,6 +12,6 @@ public record ContextField(
 ) {
     @Override
     public List<LegalValue> legalValues() {
-        return legalValues != null ? legalValues: Collections.emptyList();
+        return legalValues != null ? legalValues : Collections.emptyList();
     }
 }

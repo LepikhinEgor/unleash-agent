@@ -4,6 +4,7 @@ import ru.baldenna.unleashagent.core.contextfields.ContextFieldSynchronizer;
 import ru.baldenna.unleashagent.core.features.FeatureSynchronizer;
 import ru.baldenna.unleashagent.core.featuretags.FeatureTagsSynchronizer;
 import ru.baldenna.unleashagent.core.segments.SegmentSynchronizer;
+import ru.baldenna.unleashagent.core.strategies.StrategySynchronizer;
 import ru.baldenna.unleashagent.core.tags.TagSynchronizer;
 
 /**
@@ -16,6 +17,7 @@ public record UnleashSynchronizers(
         SegmentSynchronizer segmentSynchronizer,
         ContextFieldSynchronizer contextFieldSynchronizer,
         FeatureSynchronizer featureSynchronizer,
-        FeatureTagsSynchronizer featureTagUpdater
+        FeatureTagsSynchronizer featureTagUpdater,
+        StrategySynchronizer strategySynchronizer
 ) {
 }

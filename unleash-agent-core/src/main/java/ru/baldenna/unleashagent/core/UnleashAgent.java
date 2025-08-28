@@ -17,6 +17,10 @@ public class UnleashAgent {
         unleashConfiguration.projects().forEach((projectName, projectConfiguration) -> {
             updaters.featureSynchronizer().synchronize(projectName, projectConfiguration);
             updaters.featureTagUpdater().synchronize(projectName, projectConfiguration);
+
+            projectConfiguration.environments().forEach(projectEnvironment ->
+                    updaters.strategySynchronizer().synchronize(projectName, projectEnvironment)
+            );
         });
     }
 

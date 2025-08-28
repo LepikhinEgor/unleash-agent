@@ -1,6 +1,7 @@
 package ru.baldenna.unleashagent.core.configuration;
 
 import ru.baldenna.unleashagent.core.features.model.Feature;
+import ru.baldenna.unleashagent.core.projects.ProjectEnvironment;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +14,8 @@ import static java.util.Collections.emptyList;
  */
 public record UnleashProjectConfiguration(
 
-        List<Feature> features
+        List<Feature> features,
+        List<ProjectEnvironment> environments
 
 ) {
     @Override
@@ -21,4 +23,8 @@ public record UnleashProjectConfiguration(
         return Optional.ofNullable(features).orElse(emptyList());
     }
 
+    @Override
+    public List<ProjectEnvironment> environments() {
+        return Optional.ofNullable(environments).orElse(emptyList());
+    }
 }

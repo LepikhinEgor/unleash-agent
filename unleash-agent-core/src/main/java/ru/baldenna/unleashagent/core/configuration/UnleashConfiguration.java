@@ -41,6 +41,6 @@ public record UnleashConfiguration(
     @Override
     public Map<String, UnleashProjectConfiguration> projects() {
         return Optional.ofNullable(projects)
-                .orElse(Map.of(DEFAULT_PROJECT_NAME, new UnleashProjectConfiguration(emptyList())));
+                .orElse(Map.of(DEFAULT_PROJECT_NAME, new UnleashProjectConfiguration(emptyList(), emptyList())));
     }
 }

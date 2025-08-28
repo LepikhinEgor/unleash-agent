@@ -13,6 +13,7 @@ import ru.baldenna.unleashagent.core.projects.ProjectsResponse;
 import ru.baldenna.unleashagent.core.segments.model.CreateSegmentRequest;
 import ru.baldenna.unleashagent.core.segments.model.SegmentListResponse;
 import ru.baldenna.unleashagent.core.segments.model.UpdateSegmentRequest;
+import ru.baldenna.unleashagent.core.strategies.model.Strategy;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
@@ -265,6 +266,61 @@ public interface UnleashClient {
             "Cookie: unleash-session={sessionCookie}"
     })
     void deleteContextField(@Param("name") String name, @Param("sessionCookie") String sessionCookie);
+
+    @RequestLine("GET /api/admin/projects/{projectId}/features/{featureName}/environments/{environment}/strategies")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    List<Strategy> getFeatureStrategies(
+            @Param("projectId") String projectId,
+            @Param("featureName") String featureName,
+            @Param("environment") String environment,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("POST /api/admin/projects/{projectId}/features/{featureName}/environments/{environment}/strategies")
+    @Headers({
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void addFeatureStrategy(
+            @Param("projectId") String projectId,
+            @Param("featureName") String featureName,
+            @Param("environment") String environment,
+            Strategy strategy,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+
+    @RequestLine("DELETE /api/admin/projects/{projectId}/features/{featureName}/environments/{environment}/strategies/{strategyId}")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void deleteFeatureStrategy(
+            @Param("projectId") String projectId,
+            @Param("featureName") String featureName,
+            @Param("environment") String environment,
+            @Param("strategyId") String strategyId,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("PUT /api/admin/projects/{projectId}/features/{featureName}/environments/{environment}/strategies/{strategyId}")
+    @Headers({
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void updateFeatureStrategy(
+            @Param("projectId") String projectId,
+            @Param("featureName") String featureName,
+            @Param("environment") String environment,
+            @Param("strategyId") String strategyId,
+            Strategy updatedStrategy,
+            @Param("sessionCookie") String sessionCookie
+    );
 
 
 }

@@ -49,8 +49,8 @@ public class UnleashSessionManager {
                 .filter((setCookie) -> setCookie.startsWith("unleash-session="))
                 .findFirst()
                 .map(setCookieHeader -> new UnleashSession(
-                                setCookieHeader.substring("unleash-session=".length()),
-                                ZonedDateTime.now().plusDays(SESSION_TTL_DAYS)))
+                        setCookieHeader.substring("unleash-session=".length()),
+                        ZonedDateTime.now().plusDays(SESSION_TTL_DAYS)))
                 .orElseThrow();
     }
 }

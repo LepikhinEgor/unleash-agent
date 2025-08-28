@@ -59,10 +59,5 @@ jacocoTestCoverageVerification {
 }
 
 test {
-    enabled=false
     useJUnitPlatform()
-}
-
-checkstyleMain {
-    enabled=false
 }

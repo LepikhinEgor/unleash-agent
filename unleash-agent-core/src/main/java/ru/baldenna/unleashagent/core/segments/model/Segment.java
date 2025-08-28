@@ -6,7 +6,7 @@ public record Segment(
         int id,
         String name,
         String description,
-        List<SegmentConstraint> constraints,
+        List<FeatureConstraint> constraints,
         String project
 ) {
 

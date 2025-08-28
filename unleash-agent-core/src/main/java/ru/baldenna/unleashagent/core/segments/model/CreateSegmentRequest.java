@@ -6,6 +6,6 @@ public record CreateSegmentRequest(
         String name,
         String description,
         String project,
-        List<SegmentConstraint> constraints
+        List<FeatureConstraint> constraints
 ) {
 }

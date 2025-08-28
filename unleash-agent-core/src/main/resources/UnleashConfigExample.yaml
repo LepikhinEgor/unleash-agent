@@ -35,17 +35,70 @@ segments:
           - "test1"
           - "test2"
 contextFields:
-  name: customerType
-  description: Customer type
-  stickiness: false
-  sortOrder: 1
-  legalValues:
-    - { value: FL, description: Physical }
-    - { value: UL, description: Company }
-    - { value: IP, description: Individual entrepreneur }
-    - { value: NOT_CLIENT, description: Not client }
+   - name: customerType
+     description: Customer type
+     stickiness: false
+     sortOrder: 1
+     legalValues:
+       - { value: FL, description: Physical }
+       - { value: UL, description: Company }
+       - { value: IP, description: Individual entrepreneur }
+       - { value: NOT_CLIENT, description: Not client }
 projects:
   default:
+    environments:
+       - name: development
+         featureStrategies:
+           test-automation:
+              - name: flexibleRollout
+                constraints: [ ]
+                parameters:
+                  rollout: "100"
+                  stickiness: "default"
+                  groupId: "feature78"
+                variants:
+                  - stickiness: "default"
+                    name: "variant1"
+                    weight: 333
+                    payload:
+                      type: "string"
+                      value: "testFirst"
+                    weightType: "variable"
+                  - stickiness: "default"
+                    name: "variant2"
+                    weight: 334
+                    payload:
+                      type: "string"
+                      value: "testSecond"
+                    weightType: "variable"
+                  - stickiness: "default"
+                    name: "variant3"
+                    weight: 333
+                    payload:
+                      type: "string"
+                      value: "testThird"
+                    weightType: "variable"
+                segments:
+                  - 4
+                disabled: false
+           feature2:
+              - name: flexibleRollout
+                title: null
+                constraints:
+                  - values:
+                      - "123"
+                    inverted: false
+                    operator: IN
+                    contextName: appName
+                    caseInsensitive: false
+                parameters:
+                  rollout: "100"
+                  stickiness: "default"
+                  groupId: "feature78"
+                variants: [ ]
+                segments:
+                  - 4
+                disabled: false
     features:
       - name: test-automation
         type: release

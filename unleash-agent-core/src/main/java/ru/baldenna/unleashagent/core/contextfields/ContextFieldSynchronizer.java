@@ -6,7 +6,6 @@ import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
-import ru.baldenna.unleashagent.core.segments.model.Segment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,8 @@ public class ContextFieldSynchronizer {
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
 
-    private final List<String> defaultContextFields = List.of("appName", "currentTime", "environment", "sessionId", "userId");
+    private final List<String> defaultContextFields =
+            List.of("appName", "currentTime", "environment", "sessionId", "userId");
 
     public void synchronize(UnleashConfiguration newConfiguration) {
         try {
@@ -62,8 +62,9 @@ public class ContextFieldSynchronizer {
                                 " Context field will be deleted", remoteContextField.name(), remoteContextField.name());
                         contextFieldsToDelete.add(remoteContextField);
                     } else {
-                        log.debug("Default context field {} with name {} exists in Unleash but not declared in local config." +
-                                "Context field will not be deleted", remoteContextField.name(), remoteContextField.name());
+                        log.debug("Default context field {} with name {} exists in Unleash " +
+                                "but not declared in local config. Context field will not be deleted",
+                                remoteContextField.name(), remoteContextField.name());
                     }
                 }
             }
@@ -83,9 +84,10 @@ public class ContextFieldSynchronizer {
             log.debug(e.getMessage(), e);
         }
     }
+
     private boolean isContextFieldsEquals(ContextField localContextField, ContextField remoteContextField) {
         var contextFieldsEquals = true;
-        if (notEquals(localContextField.name(),remoteContextField.name())) {
+        if (notEquals(localContextField.name(), remoteContextField.name())) {
             log.info("Context fields differ in 'name' field: local={}, remote={}",
                     localContextField.name(), localContextField.name());
             return false;
@@ -139,7 +141,11 @@ public class ContextFieldSynchronizer {
 
     private void updateContextField(ContextField contextField) {
         try {
-            unleashClient.updateContextField(contextField.name(), contextField, unleashSessionManager.getSessionCookie());
+            unleashClient.updateContextField(
+                    contextField.name(),
+                    contextField,
+                    unleashSessionManager.getSessionCookie()
+            );
             log.info("Context field updated: {}", contextField.name());
         } catch (Exception e) {
             log.warn("Error updating context field {}", contextField.name());

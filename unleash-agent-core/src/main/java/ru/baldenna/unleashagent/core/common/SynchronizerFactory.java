@@ -7,6 +7,7 @@ import ru.baldenna.unleashagent.core.contextfields.ContextFieldSynchronizer;
 import ru.baldenna.unleashagent.core.features.FeatureSynchronizer;
 import ru.baldenna.unleashagent.core.featuretags.FeatureTagsSynchronizer;
 import ru.baldenna.unleashagent.core.segments.SegmentSynchronizer;
+import ru.baldenna.unleashagent.core.strategies.StrategySynchronizer;
 import ru.baldenna.unleashagent.core.tags.TagSynchronizer;
 
 /**
@@ -27,13 +28,15 @@ public class SynchronizerFactory {
         var contextFieldSynchronizer = new ContextFieldSynchronizer(unleashClient, unleashSessionManager);
         var featureSynchronizer = new FeatureSynchronizer(unleashClient, unleashSessionManager);
         var featureTagSynchronizer = new FeatureTagsSynchronizer(unleashClient, unleashSessionManager);
+        var strategySynchronizer = new StrategySynchronizer(unleashClient, unleashSessionManager);
 
         return new UnleashSynchronizers(
                 tagSynchronizer,
                 segmentSynchronizer,
                 contextFieldSynchronizer,
                 featureSynchronizer,
-                featureTagSynchronizer
+                featureTagSynchronizer,
+                strategySynchronizer
         );
     }
 }
