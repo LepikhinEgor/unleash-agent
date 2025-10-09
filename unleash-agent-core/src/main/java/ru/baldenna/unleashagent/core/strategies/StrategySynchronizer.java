@@ -15,6 +15,7 @@ import static ru.baldenna.unleashagent.core.utils.CompareUtils.notEquals;
  * TODO fix update segment by name
  * TODO fix bug when unleash return incorrect variant auto-weight for 33%
  * TODO fix synch strategies with same name, NEED RESEARCH. Strategy name not unique
+ * TODO kebab-case for configuration
  */
 @Slf4j
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package ru.baldenna.unleashagent.core.apikey.model;
+package ru.baldenna.unleashagent.core.apitokens.model;
 
 import java.util.List;
 

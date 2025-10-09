@@ -6,6 +6,8 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
+import ru.baldenna.unleashagent.core.apitokens.model.ApiToken;
+import ru.baldenna.unleashagent.core.apitokens.model.CreateApiTokenRequest;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
@@ -61,7 +63,7 @@ class AbstractUnleashTest {
         unleashContainer.addEnv("DATABASE_USERNAME", "unleash_user");
         unleashContainer.addEnv("DATABASE_SSL", "false");
         unleashContainer.addEnv("DATABASE_PASSWORD", "unleash_password");
-        unleashContainer.addEnv("SIMPLE_LOGIN_LIMIT_PER_MINUTE", "1000");
+        unleashContainer.addEnv("SIMPLE_LOGIN_LIMIT_PER_MINUTE", "10000");
         unleashContainer.addEnv("LOG_LEVEL", "debug");
         unleashContainer.setPortBindings(List.of("4242:4242"));
         unleashContainer.waitingFor(Wait.forHttp("/auth/simple/login"));
@@ -97,6 +99,11 @@ class AbstractUnleashTest {
         getUnleashSegments().forEach(segment ->
                 unleashClient.deleteSegment(segment.id(), sessionManager.getSessionCookie())
         );
+
+        getApiTokens().forEach(apiToken ->
+                unleashClient.deleteApiToken(apiToken.secret(), sessionManager.getSessionCookie())
+        );
+
     }
 
     protected List<TagType> getTagTypes() {
@@ -113,6 +120,10 @@ class AbstractUnleashTest {
 
     protected List<Segment> getUnleashSegments() {
         return unleashClient.getSegments(sessionManager.getSessionCookie()).segments();
+    }
+
+    protected List<ApiToken> getApiTokens() {
+        return unleashClient.getApiTokens(sessionManager.getSessionCookie()).tokens();
     }
 
     protected UnleashConfiguration parseUnleashConfigFile(String filePath) {

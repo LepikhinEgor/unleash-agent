@@ -18,10 +18,10 @@ import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
 import ru.baldenna.unleashagent.core.tagtypes.TagTypes;
-import ru.baldenna.unleashagent.core.apikey.model.ApiToken;
-import ru.baldenna.unleashagent.core.apikey.model.ApiTokenListResponse;
-import ru.baldenna.unleashagent.core.apikey.model.CreateApiTokenRequest;
-import ru.baldenna.unleashagent.core.apikey.model.UpdateApiTokenRequest;
+import ru.baldenna.unleashagent.core.apitokens.model.ApiToken;
+import ru.baldenna.unleashagent.core.apitokens.model.ApiTokenListResponse;
+import ru.baldenna.unleashagent.core.apitokens.model.CreateApiTokenRequest;
+import ru.baldenna.unleashagent.core.apitokens.model.UpdateApiTokenRequest;
 
 import java.util.List;
 
@@ -355,25 +355,25 @@ public interface UnleashClient {
             @Param("sessionCookie") String sessionCookie
     );
 
-    @RequestLine("PUT /api/admin/api-tokens/{token}")
+    @RequestLine("PUT /api/admin/api-tokens/{secret}")
     @Headers({
             "Content-Type: application/json",
             "Accept: application/json",
             "Cookie: unleash-session={sessionCookie}"
     })
     void updateApiToken(
-            @Param("token") String token,
+            @Param("secret") String token,
             UpdateApiTokenRequest request,
             @Param("sessionCookie") String sessionCookie
     );
 
-    @RequestLine("DELETE /api/admin/api-tokens/{token}")
+    @RequestLine("DELETE /api/admin/api-tokens/{secret}")
     @Headers({
             "Accept: application/json",
             "Cookie: unleash-session={sessionCookie}"
     })
     void deleteApiToken(
-            @Param("token") String token,
+            @Param("secret") String token,
             @Param("sessionCookie") String sessionCookie
     );
 

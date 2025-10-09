@@ -1,19 +1,19 @@
-package ru.baldenna.unleashagent.core.apikey;
+package ru.baldenna.unleashagent.core.apitokens;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
-import ru.baldenna.unleashagent.core.apikey.model.ApiToken;
-import ru.baldenna.unleashagent.core.apikey.model.CreateApiTokenRequest;
-import ru.baldenna.unleashagent.core.apikey.model.UpdateApiTokenRequest;
+import ru.baldenna.unleashagent.core.apitokens.model.ApiToken;
+import ru.baldenna.unleashagent.core.apitokens.model.CreateApiTokenRequest;
+import ru.baldenna.unleashagent.core.apitokens.model.UpdateApiTokenRequest;
 
 import java.util.ArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ApiKeySynchronizer {
+public class ApiTokenSynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
@@ -42,15 +42,15 @@ public class ApiKeySynchronizer {
                 ).findFirst();
 
                 if (maybeRemote.isEmpty()) {
-                    log.info("API token {} not found in Unleash and needs to be created", local.tokenName());
+                    log.info("API secret {} not found in Unleash and needs to be created", local.tokenName());
                     tokensToCreate.add(local);
                 } else {
                     var remote = maybeRemote.get();
                     if (!equals(local.expiresAt(), remote.expiresAt())) {
-                        log.info("API token {} exists but expiresAt differs and needs update", local.tokenName());
-                        tokensToUpdate.add(local.withToken(remote.token()));
+                        log.info("API secret {} exists but expiresAt differs and needs update", local.tokenName());
+                        tokensToUpdate.add(local.withSecret(remote.secret()));
                     } else {
-                        log.debug("API token {} already exists and is up to date", local.tokenName());
+                        log.debug("API secret {} already exists and is up to date", local.tokenName());
                     }
                 }
             }
@@ -63,13 +63,13 @@ public class ApiKeySynchronizer {
                                 && equals(local.environment(), remote.environment())
                 );
                 if (!existsLocally) {
-                    log.info("API token {} exists in Unleash but not in local config. Will be deleted", remote.tokenName());
+                    log.info("API secret {} exists in Unleash but not in local config. Will be deleted", remote.tokenName());
                     tokensToDelete.add(remote);
                 }
             }
 
             if (tokensToCreate.size() + tokensToUpdate.size() + tokensToDelete.size() != 0) {
-                log.info("API token states were compared. To create = {}, to update = {}, to delete = {}",
+                log.info("API secret states were compared. To create = {}, to update = {}, to delete = {}",
                         tokensToCreate.size(), tokensToUpdate.size(), tokensToDelete.size());
             } else {
                 log.info("Unleash API tokens are already up to date");
@@ -105,12 +105,12 @@ public class ApiKeySynchronizer {
     }
 
     private void updateToken(ApiToken token) {
-        unleashClient.updateApiToken(token.token(), new UpdateApiTokenRequest(
+        unleashClient.updateApiToken(token.secret(), new UpdateApiTokenRequest(
                 token.expiresAt()
         ), unleashSessionManager.getSessionCookie());
     }
 
     private void deleteToken(ApiToken token) {
-        unleashClient.deleteApiToken(token.token(), unleashSessionManager.getSessionCookie());
+        unleashClient.deleteApiToken(token.secret(), unleashSessionManager.getSessionCookie());
     }
 }

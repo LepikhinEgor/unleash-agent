@@ -1,5 +1,6 @@
 package ru.baldenna.unleashagent.core.common;
 
+import ru.baldenna.unleashagent.core.apitokens.ApiTokenSynchronizer;
 import ru.baldenna.unleashagent.core.contextfields.ContextFieldSynchronizer;
 import ru.baldenna.unleashagent.core.features.FeatureSynchronizer;
 import ru.baldenna.unleashagent.core.featuretags.FeatureTagsSynchronizer;
@@ -18,6 +19,7 @@ public record UnleashSynchronizers(
         ContextFieldSynchronizer contextFieldSynchronizer,
         FeatureSynchronizer featureSynchronizer,
         FeatureTagsSynchronizer featureTagUpdater,
-        StrategySynchronizer strategySynchronizer
+        StrategySynchronizer strategySynchronizer,
+        ApiTokenSynchronizer apiTokenSynchronizer
 ) {
 }

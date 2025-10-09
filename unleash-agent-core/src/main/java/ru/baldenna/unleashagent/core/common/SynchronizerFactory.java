@@ -1,6 +1,7 @@
 package ru.baldenna.unleashagent.core.common;
 
 import lombok.RequiredArgsConstructor;
+import ru.baldenna.unleashagent.core.apitokens.ApiTokenSynchronizer;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.contextfields.ContextFieldSynchronizer;
@@ -29,6 +30,7 @@ public class SynchronizerFactory {
         var featureSynchronizer = new FeatureSynchronizer(unleashClient, unleashSessionManager);
         var featureTagSynchronizer = new FeatureTagsSynchronizer(unleashClient, unleashSessionManager);
         var strategySynchronizer = new StrategySynchronizer(unleashClient, unleashSessionManager);
+        var apiTokenSynchronizer = new ApiTokenSynchronizer(unleashClient, unleashSessionManager);
 
         return new UnleashSynchronizers(
                 tagSynchronizer,
@@ -36,7 +38,8 @@ public class SynchronizerFactory {
                 contextFieldSynchronizer,
                 featureSynchronizer,
                 featureTagSynchronizer,
-                strategySynchronizer
+                strategySynchronizer,
+                apiTokenSynchronizer
         );
     }
 }

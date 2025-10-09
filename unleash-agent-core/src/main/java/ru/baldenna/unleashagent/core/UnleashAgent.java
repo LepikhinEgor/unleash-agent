@@ -14,6 +14,7 @@ public class UnleashAgent {
         success = success && updaters.tagSynchronizer().synchronize(unleashConfiguration);
         success = success && updaters.segmentSynchronizer().synchronize(unleashConfiguration);
         success = success && updaters.contextFieldSynchronizer().synchronize(unleashConfiguration);
+        success = success && updaters.apiTokenSynchronizer().synchronize(unleashConfiguration);
 
         for (var project : unleashConfiguration.projects().entrySet()) {
             var projectName = project.getKey();
