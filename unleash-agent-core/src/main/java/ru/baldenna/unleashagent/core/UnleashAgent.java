@@ -9,19 +9,25 @@ public class UnleashAgent {
 
     private final UnleashSynchronizers updaters;
 
-    public void synchronizeConfiguration(UnleashConfiguration unleashConfiguration) {
-        updaters.tagSynchronizer().synchronize(unleashConfiguration);
-        updaters.segmentSynchronizer().synchronize(unleashConfiguration);
-        updaters.contextFieldSynchronizer().synchronize(unleashConfiguration);
+    public boolean synchronizeConfiguration(UnleashConfiguration unleashConfiguration) {
+        var success = true;
+        success = success && updaters.tagSynchronizer().synchronize(unleashConfiguration);
+        success = success && updaters.segmentSynchronizer().synchronize(unleashConfiguration);
+        success = success && updaters.contextFieldSynchronizer().synchronize(unleashConfiguration);
 
-        unleashConfiguration.projects().forEach((projectName, projectConfiguration) -> {
-            updaters.featureSynchronizer().synchronize(projectName, projectConfiguration);
-            updaters.featureTagUpdater().synchronize(projectName, projectConfiguration);
+        for (var project : unleashConfiguration.projects().entrySet()) {
+            var projectName = project.getKey();
+            var projectConfiguration = project.getValue();
 
-            projectConfiguration.environments().forEach(projectEnvironment ->
-                    updaters.strategySynchronizer().synchronize(projectName, projectEnvironment)
-            );
-        });
+            success = success && updaters.featureSynchronizer().synchronize(projectName, projectConfiguration);
+            success = success && updaters.featureTagUpdater().synchronize(projectName, projectConfiguration);
+
+            for (var environment: projectConfiguration.environments()) {
+                success = success &&  updaters.strategySynchronizer().synchronize(projectName, environment);
+            }
+        }
+
+        return success;
     }
 
 }

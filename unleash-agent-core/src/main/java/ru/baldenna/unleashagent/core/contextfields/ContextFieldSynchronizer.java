@@ -22,7 +22,7 @@ public class ContextFieldSynchronizer {
     private final List<String> defaultContextFields =
             List.of("appName", "currentTime", "environment", "sessionId", "userId");
 
-    public void synchronize(UnleashConfiguration newConfiguration) {
+    public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
             log.info("Check unleash context fields for update");
             var remoteContextFields = unleashClient.getContextFields(unleashSessionManager.getSessionCookie());
@@ -82,7 +82,11 @@ public class ContextFieldSynchronizer {
         } catch (Exception e) {
             log.warn("Error while context fields synchronization", e);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
+
+        return true;
     }
 
     private boolean isContextFieldsEquals(ContextField localContextField, ContextField remoteContextField) {

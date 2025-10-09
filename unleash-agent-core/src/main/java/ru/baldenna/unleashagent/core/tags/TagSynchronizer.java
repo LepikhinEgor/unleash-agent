@@ -21,8 +21,9 @@ public class TagSynchronizer {
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
 
-    public void synchronize(UnleashConfiguration newConfiguration) {
+    public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
+            var success = true;
             log.info("Check unleash tags for update");
             var remoteTags = Optional.ofNullable(unleashClient.getTags(unleashSessionManager.getSessionCookie())
                     .tags()).orElse(Collections.emptyList());
@@ -58,15 +59,19 @@ public class TagSynchronizer {
                 log.info("Unleash tags already up to date");
             }
 
-            tagsToCreate.forEach(this::createTag);
-            tagsToDelete.forEach(this::deleteTag);
+            success = tagsToCreate.stream().allMatch(this::createTag);
+            success = success && tagsToDelete.stream().allMatch(this::deleteTag);
+
+            return success;
         } catch (Exception e) {
             log.warn("Error while tags synchronization");
             log.debug(e.getMessage(), e);
+
+            return false;
         }
     }
 
-    private void createTag(Tag tag) {
+    private boolean createTag(Tag tag) {
         try {
             unleashClient.createTag(new Tag(tag.value(), tag.type()), unleashSessionManager.getSessionCookie());
 
@@ -74,10 +79,13 @@ public class TagSynchronizer {
         } catch (Exception e) {
             log.warn("Error creating tag {}:{}", tag.type(), tag.value());
             log.debug(e.getMessage(), e);
+            return false;
         }
+
+        return true;
     }
 
-    private void deleteTag(Tag tag) {
+    private boolean deleteTag(Tag tag) {
         try {
             unleashClient.deleteTag(tag.type(), tag.value(), unleashSessionManager.getSessionCookie());
 
@@ -85,6 +93,10 @@ public class TagSynchronizer {
         } catch (Exception e) {
             log.warn("Error removing tag {}:{}", tag.type(), tag.value());
             log.debug(e.getMessage(), e);
+
+            return false;
         }
+
+        return true;
     }
 }

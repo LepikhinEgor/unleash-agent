@@ -18,7 +18,7 @@ public class SegmentSynchronizer {
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
 
-    public void synchronize(UnleashConfiguration newConfiguration) {
+    public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
             log.info("Check unleash segments for update");
             var remoteSegments = unleashClient.getSegments(unleashSessionManager.getSessionCookie())
@@ -73,7 +73,11 @@ public class SegmentSynchronizer {
         } catch (Exception e) {
             log.warn("Error while segments synchronization", e);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
+
+        return true;
     }
 
     private boolean isSegmentEquals(Segment localSegment, Segment remoteSegment) {

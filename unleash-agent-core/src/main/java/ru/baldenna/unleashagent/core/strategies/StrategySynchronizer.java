@@ -24,7 +24,7 @@ public class StrategySynchronizer {
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
 
-    public void synchronize(String project, ProjectEnvironment environmentConfiguration) {
+    public boolean synchronize(String project, ProjectEnvironment environmentConfiguration) {
         try {
             log.info("Check unleash strategies for update");
             environmentConfiguration.featureStrategies().forEach((feature, featureStrategies) -> {
@@ -93,7 +93,11 @@ public class StrategySynchronizer {
         } catch (Exception e) {
             log.warn("Error while strategies synchronization", e);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
+
+        return true;
     }
 
     private boolean isStrategyEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {

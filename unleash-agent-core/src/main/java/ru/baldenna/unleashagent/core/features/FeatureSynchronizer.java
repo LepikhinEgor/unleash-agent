@@ -29,8 +29,9 @@ public class FeatureSynchronizer {
     final UnleashClient unleashClient;
     final UnleashSessionManager sessionManager;
 
-    public void synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
+    public boolean synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
         try {
+            var success = true;
             log.info("Check unleash features for update");
             var remoteFeatures = getRemoteFeatures(projectName);
             var localFeatures = newConfiguration.features();
@@ -77,12 +78,16 @@ public class FeatureSynchronizer {
                 log.info("Unleash features already up to date");
             }
 
-            featuresToCreate.forEach(feature -> createFeature(feature, projectName));
-            featuresToUpdate.forEach(feature -> updateFeature(feature, projectName));
-            featuresToDelete.forEach(feature -> deleteFeature(feature, projectName));
+            success = featuresToCreate.stream().allMatch(feature -> createFeature(feature, projectName));
+            success = success && featuresToUpdate.stream().allMatch(feature -> updateFeature(feature, projectName));
+            success = success && featuresToDelete.stream().allMatch(feature -> deleteFeature(feature, projectName));
+
+            return success;
         } catch (Exception e) {
             log.warn("Error while feature synchronization in project {}", projectName);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
     }
 
@@ -118,7 +123,7 @@ public class FeatureSynchronizer {
         }
     }
 
-    private void createFeature(Feature feature, String project) {
+    private boolean createFeature(Feature feature, String project) {
         try {
             CreateFeatureDto createFeatureDto = new CreateFeatureDto(
                     feature.name(),
@@ -129,33 +134,43 @@ public class FeatureSynchronizer {
             unleashClient.createFeature(project, createFeatureDto, sessionManager.getSessionCookie());
 
             log.info("Feature created: {}", createFeatureDto.name());
+
+            return true;
         } catch (Exception e) {
             log.warn("Error creating feature {} in project {}", feature.name(), project);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
     }
 
-    private void updateFeature(Feature feature, String project) {
+    private boolean updateFeature(Feature feature, String project) {
         try {
             unleashClient.updateFeature(project, feature.name(), new UpdateFeatureDto(
                     feature.type(),
                     feature.description()), sessionManager.getSessionCookie());
             log.info("Feature updated: {}", feature.name());
+
+            return true;
         } catch (Exception e) {
             log.warn("Error updating feature {} in project {}", feature.name(), project);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
     }
 
-    private void deleteFeature(Feature feature, String project) {
+    private boolean deleteFeature(Feature feature, String project) {
         try {
             unleashClient.archiveFeature(project, feature.name(), sessionManager.getSessionCookie());
             unleashClient.deleteFeature(feature.name(), sessionManager.getSessionCookie());
 
             log.info("Feature deleted: {}", feature.name());
+            return true;
         } catch (Exception e) {
             log.warn("Error deleting feature {} in project {}", feature.name(), project);
             log.debug(e.getMessage(), e);
+            return false;
         }
     }
 }

@@ -25,7 +25,7 @@ public class FeatureTagsSynchronizer {
     final UnleashClient unleashClient;
     final UnleashSessionManager unleashSessionManager;
 
-    public void synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
+    public boolean synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
         try {
             log.info("Check unleash feature tags for update");
             var remoteFeatures = getRemoteFeatures(projectName)
@@ -49,7 +49,11 @@ public class FeatureTagsSynchronizer {
         } catch (Exception e) {
             log.warn("Error while feature tags synchronization in project {}", projectName);
             log.debug(e.getMessage(), e);
+
+            return false;
         }
+
+        return true;
     }
 
     private FeaturesResponse getRemoteFeatures(String projectName) {
