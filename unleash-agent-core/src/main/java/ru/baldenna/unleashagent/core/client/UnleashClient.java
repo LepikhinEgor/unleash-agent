@@ -18,6 +18,10 @@ import ru.baldenna.unleashagent.core.tags.model.Tag;
 import ru.baldenna.unleashagent.core.tags.model.TagListResponse;
 import ru.baldenna.unleashagent.core.tagtypes.TagType;
 import ru.baldenna.unleashagent.core.tagtypes.TagTypes;
+import ru.baldenna.unleashagent.core.apikey.model.ApiToken;
+import ru.baldenna.unleashagent.core.apikey.model.ApiTokenListResponse;
+import ru.baldenna.unleashagent.core.apikey.model.CreateApiTokenRequest;
+import ru.baldenna.unleashagent.core.apikey.model.UpdateApiTokenRequest;
 
 import java.util.List;
 
@@ -322,5 +326,55 @@ public interface UnleashClient {
             @Param("sessionCookie") String sessionCookie
     );
 
+    // API tokens
+    @RequestLine("GET /api/admin/api-tokens")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    ApiTokenListResponse getApiTokens(@Param("sessionCookie") String sessionCookie);
+
+    @RequestLine("GET /api/admin/api-tokens/{name}")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    ApiToken getApiTokenByName(
+            @Param("name") String name,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("POST /api/admin/api-tokens")
+    @Headers({
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void createApiToken(
+            CreateApiTokenRequest request,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("PUT /api/admin/api-tokens/{token}")
+    @Headers({
+            "Content-Type: application/json",
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void updateApiToken(
+            @Param("token") String token,
+            UpdateApiTokenRequest request,
+            @Param("sessionCookie") String sessionCookie
+    );
+
+    @RequestLine("DELETE /api/admin/api-tokens/{token}")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    void deleteApiToken(
+            @Param("token") String token,
+            @Param("sessionCookie") String sessionCookie
+    );
 
 }

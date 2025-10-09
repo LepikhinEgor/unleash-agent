@@ -1,11 +1,16 @@
 package ru.baldenna.unleashagent.core.configuration;
 
 import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
+import ru.baldenna.unleashagent.core.apikey.model.ApiToken;
+import ru.baldenna.unleashagent.core.features.model.Feature;
+import ru.baldenna.unleashagent.core.projects.ProjectEnvironment;
 import ru.baldenna.unleashagent.core.segments.model.Segment;
 import ru.baldenna.unleashagent.core.tags.model.Tag;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -18,7 +23,8 @@ public record UnleashConfiguration(
         List<Tag> tags,
         List<Segment> segments,
         List<ContextField> contextFields,
-        Map<String, UnleashProjectConfiguration> projects
+        Map<String, UnleashProjectConfiguration> projects,
+        List<ApiToken> apiTokens
 ) {
 
     private static final String DEFAULT_PROJECT_NAME = "default";
@@ -42,5 +48,9 @@ public record UnleashConfiguration(
     public Map<String, UnleashProjectConfiguration> projects() {
         return Optional.ofNullable(projects)
                 .orElse(Map.of(DEFAULT_PROJECT_NAME, new UnleashProjectConfiguration(emptyList(), emptyList())));
+    }
+
+    public List<ApiToken> apiTokens() {
+        return Optional.ofNullable(apiTokens).orElse(emptyList());
     }
 }
