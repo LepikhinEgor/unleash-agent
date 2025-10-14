@@ -5,18 +5,12 @@ import ru.baldenna.unleashagent.core.tags.model.Tag;
 import java.util.HashSet;
 
 public record Feature(
+        String name,
         String type,
         String description,
         String project,
         boolean favorite,
-        String name,
-        String createdAt,
         boolean stale,
-        String archivedAt,
-        boolean impressionData,
-        String lastSeenAt,
-        String dependencyType,
-        FeatureLifecycle lifecycle,
         HashSet<Tag> tags
 ) {
 

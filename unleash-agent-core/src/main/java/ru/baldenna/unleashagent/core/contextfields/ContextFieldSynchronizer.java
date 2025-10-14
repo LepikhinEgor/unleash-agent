@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.baldenna.unleashagent.core.utils.CompareUtils.notEquals;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,6 +21,8 @@ public class ContextFieldSynchronizer {
 
     private final List<String> defaultContextFields =
             List.of("appName", "currentTime", "environment", "sessionId", "userId");
+
+    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
@@ -90,47 +92,8 @@ public class ContextFieldSynchronizer {
     }
 
     private boolean isContextFieldsEquals(ContextField localContextField, ContextField remoteContextField) {
-        var contextFieldsEquals = true;
-        if (notEquals(localContextField.name(), remoteContextField.name())) {
-            log.info("Context fields differ in 'name' field: local={}, remote={}",
-                    localContextField.name(), localContextField.name());
-            return false;
-        }
-        if (notEquals(localContextField.description(), remoteContextField.description())) {
-            log.info("Context fields differ in 'description' field: local={}, remote={}",
-                    localContextField.description(), remoteContextField.description());
-            contextFieldsEquals = false;
-        }
-        if (notEquals(localContextField.stickiness(), remoteContextField.stickiness())) {
-            log.info("Context fields differ in 'stickiness' field: local={}, remote={}",
-                    localContextField.stickiness(), remoteContextField.stickiness());
-            contextFieldsEquals = false;
-        }
-        if (notEquals(localContextField.sortOrder(), remoteContextField.sortOrder())) {
-            log.info("Context fields differ in 'sortOrder' field: local={}, remote={}",
-                    localContextField.sortOrder(), remoteContextField.sortOrder());
-            contextFieldsEquals = false;
-        }
 
-        var localLegalValues = localContextField.legalValues();
-        var remoteLegalValues = remoteContextField.legalValues();
-        if (localLegalValues.size() != remoteLegalValues.size()) {
-            log.info("Context fields differ in 'legalValues' count: local={}, remote={}",
-                    localLegalValues.size(), remoteLegalValues.size());
-            return false;
-        }
-
-        for (int i = 0; i < localLegalValues.size(); i++) {
-            var localLegalValue = localLegalValues.get(i);
-            var remoteLegalValue = remoteLegalValues.get(i);
-            if (notEquals(localLegalValue, remoteLegalValue)) {
-                log.info("Context fields differ in 'legalValues' at index {}: local={}, remote={}",
-                        i, localLegalValue, remoteLegalValue);
-                contextFieldsEquals = false;
-            }
-        }
-
-        return contextFieldsEquals;
+       return universalComparator.compareWithLib(localContextField, remoteContextField);
     }
 
     private void createContextField(ContextField contextField) {

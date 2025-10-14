@@ -16,6 +16,7 @@ dependencies {
 
     api "io.github.openfeign:feign-core:${Versions.feign}"
     api "io.github.openfeign:feign-jackson:${Versions.feign}"
+    implementation "com.cedarsoftware:java-util:${Versions.cedarJavaUtils}"
 
     compileOnly "org.projectlombok:lombok:${Versions.lombok}"
     annotationProcessor "org.projectlombok:lombok:${Versions.lombok}"

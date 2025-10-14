@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.projects.ProjectEnvironment;
 import ru.baldenna.unleashagent.core.strategies.model.Strategy;
 
 import java.util.ArrayList;
 
-import static ru.baldenna.unleashagent.core.utils.CompareUtils.notEquals;
 
 /**
  * TODO fix update segment by name
@@ -24,6 +24,7 @@ public class StrategySynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
+    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(String project, ProjectEnvironment environmentConfiguration) {
         try {
@@ -102,138 +103,7 @@ public class StrategySynchronizer {
     }
 
     private boolean isStrategyEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        var strategyEquals = true;
-
-        // Compare name
-        if (notEquals(localStrategy.name(), existingStrategy.name())) {
-            log.info("Strategies differ in 'name' field: local={}, remote={}",
-                    localStrategy.name(), existingStrategy.name());
-            strategyEquals = false;
-        }
-
-        // Compare title
-        if (notEquals(localStrategy.title(), existingStrategy.title())) {
-            log.info("Strategies differ in 'title' field: local={}, remote={}",
-                    localStrategy.title(), existingStrategy.title());
-            strategyEquals = false;
-        }
-
-        // Compare disabled
-        if (notEquals(localStrategy.disabled(), existingStrategy.disabled())) {
-            log.info("Strategies differ in 'disabled' field: local={}, remote={}",
-                    localStrategy.disabled(), existingStrategy.disabled());
-            strategyEquals = false;
-        }
-
-        // Compare sortOrder
-        if (notEquals(localStrategy.sortOrder(), existingStrategy.sortOrder())) {
-            log.info("Strategies differ in 'sortOrder' field: local={}, remote={}",
-                    localStrategy.sortOrder(), existingStrategy.sortOrder());
-            strategyEquals = false;
-        }
-
-        // Compare constraints
-        strategyEquals = strategyEquals && isConstraintsEquals(localStrategy, existingStrategy, feature);
-
-        // Compare variants
-        strategyEquals = strategyEquals && isVariantEquals(localStrategy, existingStrategy, feature);
-
-        // Compare parameters
-        strategyEquals = strategyEquals && isParametersEquals(localStrategy, existingStrategy, feature);
-
-        // Compare segments
-        strategyEquals = strategyEquals && isSegmentsEquals(localStrategy, existingStrategy, feature);
-
-        return strategyEquals;
-    }
-
-    private boolean isParametersEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        var parametersEquals = true;
-        var localParameters = localStrategy.parameters();
-        var remoteParameters = existingStrategy.parameters();
-        if (localParameters.size() != remoteParameters.size()) {
-            log.info("Strategies in feature {} differ in 'parameters' count: local={}, remote={}",
-                    feature, localParameters.size(), remoteParameters.size());
-            parametersEquals = false;
-        }
-        for (var entry : localParameters.entrySet()) {
-            var localValue = entry.getValue();
-            var remoteValue = remoteParameters.get(entry.getKey());
-            if (notEquals(localValue, remoteValue)) {
-                log.info("Strategies in feature {} differ in 'parameters' for key {}: local={}, remote={}",
-                        feature, entry.getKey(), localValue, remoteValue);
-                parametersEquals = false;
-            }
-        }
-        return parametersEquals;
-    }
-
-    private boolean isVariantEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        var variantEquals = true;
-        var localVariants = localStrategy.variants();
-        var remoteVariants = existingStrategy.variants();
-        if (localVariants.size() != remoteVariants.size()) {
-            log.info("Strategies in feature {} differ in 'variants' count: local={}, remote={}",
-                    feature, localVariants.size(), remoteVariants.size());
-            variantEquals = false;
-        }
-        for (int i = 0; i < localVariants.size(); i++) {
-            var localVariant = localVariants.get(i);
-            var remoteVariant = remoteVariants.get(i);
-            if (notEquals(localVariant, remoteVariant)) {
-                log.info("Strategies in feature {} differ in 'variants' at index {}: local={}, remote={}",
-                        feature, i, localVariant, remoteVariant);
-                variantEquals = false;
-            }
-        }
-        return variantEquals;
-    }
-
-    private boolean isSegmentsEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        var segmentEquals = true;
-        var localSegments = localStrategy.segments();
-        var remoteSegments = existingStrategy.segments();
-        if (localSegments.size() != remoteSegments.size()) {
-            log.info("Strategies in feature {} differ in 'segments' count: local={}, remote={}",
-                    feature, localSegments.size(), remoteSegments.size());
-            segmentEquals = false;
-        }
-        for (int i = 0; i < localSegments.size(); i++) {
-            var localSegment = localSegments.get(i);
-            var remoteSegment = remoteSegments.get(i);
-            if (notEquals(localSegment, remoteSegment)) {
-                log.info("Strategies in feature {} differ in 'segments' at index {}: local={}, remote={}",
-                        feature, i, localSegment, remoteSegment);
-                segmentEquals = false;
-            }
-        }
-        return segmentEquals;
-    }
-
-    private boolean isConstraintsEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        var constraintsEquals = true;
-        var localConstraints = localStrategy.constraints();
-        var remoteConstraints = existingStrategy.constraints();
-        if (localConstraints.size() != remoteConstraints.size()) {
-            log.info("Strategies in feature {} differ in 'constraints' count: local={}, remote={}",
-                    feature, localConstraints.size(), remoteConstraints.size());
-            constraintsEquals = false;
-        }
-        for (int i = 0; i < localConstraints.size(); i++) {
-            var localConstraint = localConstraints.get(i);
-            if (remoteConstraints.size() <= i) {
-                log.info("Strategies in feature {} differ in 'constraints' at index {}: local={}, remote=missed",
-                        feature, i, localConstraint);
-                return false;
-            }
-            var remoteConstraint = remoteConstraints.get(i);
-            if (notEquals(localConstraint, remoteConstraint)) {
-                log.info("Strategies in feature {} differ in 'constraints' at index {}: local={}, remote={}",
-                        feature, i, localConstraint, remoteConstraint);
-                constraintsEquals = false;
-            }
-        }
-        return constraintsEquals;
+        return universalComparator.compareWithLib(localStrategy, existingStrategy);
     }
 
     private void addFeatureStrategy(String projectId, String featureName, String environment, Strategy strategy) {

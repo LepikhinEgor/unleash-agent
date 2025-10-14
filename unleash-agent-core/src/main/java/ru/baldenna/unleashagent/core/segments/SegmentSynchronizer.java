@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.segments.model.CreateSegmentRequest;
 import ru.baldenna.unleashagent.core.segments.model.Segment;
@@ -17,6 +18,7 @@ public class SegmentSynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
+    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
@@ -81,47 +83,7 @@ public class SegmentSynchronizer {
     }
 
     private boolean isSegmentEquals(Segment localSegment, Segment remoteSegment) {
-        var segmentEquals = true;
-        // Compare name
-        if (notEquals(localSegment.name(), (remoteSegment.name()))) {
-            log.info("Segments differ in 'name' field: local={}, remote={}",
-                    localSegment.name(), remoteSegment.name());
-            segmentEquals = false;
-        }
-
-        // Compare description
-        if (notEquals(localSegment.description(), (remoteSegment.description()))) {
-            log.info("Segments differ in 'description' field: local={}, remote={}",
-                    localSegment.description(), remoteSegment.description());
-            segmentEquals = false;
-        }
-
-        // Compare project
-        if (notEquals(localSegment.project(), (remoteSegment.project()))) {
-            log.info("Segments differ in 'project' field: local={}, remote={}",
-                    localSegment.project(), remoteSegment.project());
-            segmentEquals = false;
-        }
-
-        // Compare constraints
-        var localConstraints = localSegment.constraints();
-        var remoteConstraints = remoteSegment.constraints();
-        if (localConstraints.size() != remoteConstraints.size()) {
-            log.info("Segments differ in 'constraints' count: local={}, remote={}",
-                    localConstraints.size(), remoteConstraints.size());
-            return false;
-        }
-        for (int i = 0; i < localConstraints.size(); i++) {
-            var localConstraint = localConstraints.get(i);
-            var remoteConstraint = remoteConstraints.get(i);
-            if (notEquals(localConstraint, (remoteConstraint))) {
-                log.info("Segments differ in 'constraints' at index {}: local={}, remote={}",
-                        i, localConstraint, remoteConstraint);
-                segmentEquals = false;
-            }
-        }
-
-        return segmentEquals;
+        return universalComparator.compareWithLib(localSegment, remoteSegment);
     }
 
     private boolean equals(Object local, Object remote) {
@@ -135,9 +97,6 @@ public class SegmentSynchronizer {
         return local.equals(remote);
     }
 
-    private boolean notEquals(Object local, Object remote) {
-        return !equals(local, remote);
-    }
 
     private void createSegment(Segment segment) {
         unleashClient.createSegment(

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.apitokens.model.ApiToken;
 import ru.baldenna.unleashagent.core.apitokens.model.CreateApiTokenRequest;
@@ -34,12 +35,9 @@ public class ApiTokenSynchronizer {
             var tokensToDelete = new ArrayList<ApiToken>();
 
             for (ApiToken local : localTokens) {
-                var maybeRemote = remoteTokens.stream().filter(r ->
-                        equals(local.tokenName(), r.tokenName())
-                                && equals(local.type(), r.type())
-                                && equals(local.project(), r.project())
-                                && equals(local.environment(), r.environment())
-                ).findFirst();
+                var maybeRemote = remoteTokens.stream()
+                        .filter(r -> isSameApiToken(local, r))
+                        .findFirst();
 
                 if (maybeRemote.isEmpty()) {
                     log.info("API secret {} not found in Unleash and needs to be created", local.tokenName());
@@ -56,12 +54,8 @@ public class ApiTokenSynchronizer {
             }
 
             for (ApiToken remote : remoteTokens) {
-                var existsLocally = localTokens.stream().anyMatch(local ->
-                        equals(local.tokenName(), remote.tokenName())
-                                && equals(local.type(), remote.type())
-                                && equals(local.project(), remote.project())
-                                && equals(local.environment(), remote.environment())
-                );
+                var existsLocally = localTokens.stream()
+                        .anyMatch(local -> isSameApiToken(local, remote));
                 if (!existsLocally) {
                     log.info("API secret {} exists in Unleash but not in local config. Will be deleted", remote.tokenName());
                     tokensToDelete.add(remote);
@@ -85,6 +79,13 @@ public class ApiTokenSynchronizer {
         }
 
         return true;
+    }
+
+    private boolean isSameApiToken(ApiToken local, ApiToken r) {
+        return equals(local.tokenName(), r.tokenName())
+                && equals(local.type(), r.type())
+                && equals(local.project(), r.project())
+                && equals(local.environment(), r.environment());
     }
 
     private boolean equals(Object a, Object b) {

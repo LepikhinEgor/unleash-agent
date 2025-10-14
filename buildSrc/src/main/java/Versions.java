@@ -9,5 +9,6 @@ public interface Versions {
     String assertj = "3.27.4";
     String springBoot = "3.5.4";
     String cliLib= "1.9.0";
+    String cedarJavaUtils = "4.1.0";
 
 }

@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashProjectConfiguration;
-import ru.baldenna.unleashagent.core.features.model.CompareResult;
-import ru.baldenna.unleashagent.core.features.model.CompareResultType;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.Feature;
 import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
@@ -14,10 +13,6 @@ import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.baldenna.unleashagent.core.features.model.CompareResultType.CHANGED;
-import static ru.baldenna.unleashagent.core.features.model.CompareResultType.EQUAL;
-import static ru.baldenna.unleashagent.core.features.model.CompareResultType.ERROR;
-import static ru.baldenna.unleashagent.core.features.model.CompareResultType.NOT_EQUAL;
 
 /**
  * Synchronizes features in Unleash with features in the given configuration
@@ -26,8 +21,9 @@ import static ru.baldenna.unleashagent.core.features.model.CompareResultType.NOT
 @RequiredArgsConstructor
 public class FeatureSynchronizer {
 
-    final UnleashClient unleashClient;
-    final UnleashSessionManager sessionManager;
+    private final UnleashClient unleashClient;
+    private final UnleashSessionManager sessionManager;
+    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
         try {
@@ -41,28 +37,23 @@ public class FeatureSynchronizer {
             var featuresToDelete = new ArrayList<Feature>();
 
             for (Feature localFlag : localFeatures) {
-                var featureAlreadyActual = remoteFeatures.stream()
-                        .map((remoteFeature) -> compareFeatures(localFlag, remoteFeature))
-                        .anyMatch(compareResult -> compareResult.type() == EQUAL);
-                if (featureAlreadyActual) {
-                    log.debug("Feature {} already exists and actual", localFlag.name());
-                    continue;
-                }
-
-                var featureChanged = remoteFeatures.stream()
-                        .map((remoteFeature) -> compareFeatures(localFlag, remoteFeature))
-                        .filter(compareResult -> compareResult.type() == CHANGED)
+                var remoteFeatureOpt = remoteFeatures.stream()
+                        .filter(remoteFeature -> localFlag.name().equals(remoteFeature.name()))
                         .findFirst();
-                if (featureChanged.isPresent()) {
-                    log.info("Feature {} exists but need to be changed. Reason: {}",
-                            localFlag.name(), featureChanged.get().details());
-                    featuresToUpdate.add(localFlag);
+                if (remoteFeatureOpt.isEmpty()) {
+                    log.info("Feature {} not found in Unleash and need to be created", localFlag.name());
+                    featuresToCreate.add(localFlag);
                     continue;
                 }
 
-                log.info("Feature {} not found in Unleash and need to be created", localFlag.name());
-                featuresToCreate.add(localFlag);
+                if (compareFeatures(localFlag, remoteFeatureOpt.get())) {
+                    log.debug("Feature {} already exists and actual", localFlag.name());
+                } else {
+                    log.info("Feature {} exists but need to be changed.", localFlag.name());
+                    featuresToUpdate.add(localFlag);
+                }
             }
+
             for (Feature remoteFlag : remoteFeatures) {
                 if (localFeatures.stream().noneMatch(localFlag -> localFlag.name().equals(remoteFlag.name()))) {
                     log.info("Feature {} exists in Unleash but not declared in local config. Feature will be deleted",
@@ -95,32 +86,8 @@ public class FeatureSynchronizer {
         return unleashClient.getFeatures(projectName, sessionManager.getSessionCookie()).features();
     }
 
-    private CompareResult compareFeatures(Feature local, Feature remote) {
-        try {
-            boolean nameEquals = local.name().equals(remote.name());
-            if (!nameEquals) {
-                String details = "Different features: " + local.name() + " and " + remote.name();
-                return new CompareResult(NOT_EQUAL, details);
-            }
-            boolean typeEquals = local.type().equals(remote.type());
-            if (!typeEquals) {
-                String details = String.format("Feature %s type changed: %s -> %s",
-                        remote.name(), remote.type(), local.type());
-
-                return new CompareResult(CompareResultType.CHANGED, details);
-            }
-            boolean descriptionEquals = local.description().equals(remote.description());
-            if (!descriptionEquals) {
-                String details = String.format("Feature %s description changed: %s -> %s",
-                        remote.name(), remote.description(), local.description());
-
-                return new CompareResult(CompareResultType.CHANGED, details);
-            }
-            return new CompareResult(CompareResultType.EQUAL, "Feature " + remote.name() + " has actual state");
-        } catch (Exception e) {
-            log.error("Error trying compare features", e);
-            return new CompareResult(ERROR, e.getMessage());
-        }
+    private boolean compareFeatures(Feature local, Feature remote) {
+        return universalComparator.compareWithLib(local, remote);
     }
 
     private boolean createFeature(Feature feature, String project) {
