@@ -8,7 +8,6 @@ public record Feature(
         String name,
         String type,
         String description,
-        String project,
         boolean favorite,
         boolean stale,
         HashSet<Tag> tags

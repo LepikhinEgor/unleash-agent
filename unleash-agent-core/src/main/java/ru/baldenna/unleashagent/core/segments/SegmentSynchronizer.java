@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
-import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.segments.model.CreateSegmentRequest;
 import ru.baldenna.unleashagent.core.segments.model.Segment;
@@ -12,13 +11,14 @@ import ru.baldenna.unleashagent.core.segments.model.UpdateSegmentRequest;
 
 import java.util.ArrayList;
 
+import static ru.baldenna.unleashagent.core.utils.CompareUtils.deepCompare;
+
 @Slf4j
 @RequiredArgsConstructor
 public class SegmentSynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
-    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
@@ -83,7 +83,7 @@ public class SegmentSynchronizer {
     }
 
     private boolean isSegmentEquals(Segment localSegment, Segment remoteSegment) {
-        return universalComparator.compareWithLib(localSegment, remoteSegment);
+        return deepCompare(localSegment.copyWithId(remoteSegment.id()), remoteSegment);
     }
 
     private boolean equals(Object local, Object remote) {

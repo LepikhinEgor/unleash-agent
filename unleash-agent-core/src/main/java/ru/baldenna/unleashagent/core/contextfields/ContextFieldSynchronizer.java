@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
-import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.baldenna.unleashagent.core.utils.CompareUtils.deepCompare;
 
 
 @Slf4j
@@ -21,8 +22,6 @@ public class ContextFieldSynchronizer {
 
     private final List<String> defaultContextFields =
             List.of("appName", "currentTime", "environment", "sessionId", "userId");
-
-    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(UnleashConfiguration newConfiguration) {
         try {
@@ -93,7 +92,7 @@ public class ContextFieldSynchronizer {
 
     private boolean isContextFieldsEquals(ContextField localContextField, ContextField remoteContextField) {
 
-       return universalComparator.compareWithLib(localContextField, remoteContextField);
+       return deepCompare(localContextField, remoteContextField);
     }
 
     private void createContextField(ContextField contextField) {

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
-import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.configuration.UnleashProjectConfiguration;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.Feature;
@@ -12,6 +11,8 @@ import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.baldenna.unleashagent.core.utils.CompareUtils.deepCompare;
 
 
 /**
@@ -23,7 +24,6 @@ public class FeatureSynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager sessionManager;
-    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(String projectName, UnleashProjectConfiguration newConfiguration) {
         try {
@@ -87,7 +87,7 @@ public class FeatureSynchronizer {
     }
 
     private boolean compareFeatures(Feature local, Feature remote) {
-        return universalComparator.compareWithLib(local, remote);
+        return deepCompare(local, remote);
     }
 
     private boolean createFeature(Feature feature, String project) {

@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
-import ru.baldenna.unleashagent.core.common.UniversalComparator;
 import ru.baldenna.unleashagent.core.projects.ProjectEnvironment;
 import ru.baldenna.unleashagent.core.strategies.model.Strategy;
 
 import java.util.ArrayList;
+
+import static ru.baldenna.unleashagent.core.utils.CompareUtils.deepCompare;
 
 
 /**
@@ -24,7 +25,6 @@ public class StrategySynchronizer {
 
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
-    private final UniversalComparator universalComparator = new UniversalComparator();
 
     public boolean synchronize(String project, ProjectEnvironment environmentConfiguration) {
         try {
@@ -103,7 +103,7 @@ public class StrategySynchronizer {
     }
 
     private boolean isStrategyEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        return universalComparator.compareWithLib(localStrategy, existingStrategy);
+        return deepCompare(localStrategy, existingStrategy);
     }
 
     private void addFeatureStrategy(String projectId, String featureName, String environment, Strategy strategy) {
