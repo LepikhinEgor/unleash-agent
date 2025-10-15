@@ -6,6 +6,7 @@ import feign.RequestLine;
 import feign.Response;
 import ru.baldenna.unleashagent.core.auth.LoginRequest;
 import ru.baldenna.unleashagent.core.contextfields.model.ContextField;
+import ru.baldenna.unleashagent.core.environment.EnvironmentListResponse;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
 import ru.baldenna.unleashagent.core.features.model.FeaturesResponse;
 import ru.baldenna.unleashagent.core.features.model.UpdateFeatureDto;
@@ -376,5 +377,13 @@ public interface UnleashClient {
             @Param("secret") String token,
             @Param("sessionCookie") String sessionCookie
     );
+
+    @RequestLine("GET api/admin/environments/project/{project}")
+    @Headers({
+            "Accept: application/json",
+            "Cookie: unleash-session={sessionCookie}"
+    })
+    EnvironmentListResponse getProjectEnvironments(@Param("project") String project,
+                                                   @Param("sessionCookie") String sessionCookie);
 
 }

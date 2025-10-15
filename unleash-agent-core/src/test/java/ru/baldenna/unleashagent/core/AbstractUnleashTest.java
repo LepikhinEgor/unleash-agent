@@ -12,6 +12,7 @@ import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
 import ru.baldenna.unleashagent.core.common.SynchronizerFactory;
+import ru.baldenna.unleashagent.core.common.UnleashConfigCollector;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
 import ru.baldenna.unleashagent.core.features.model.CreateFeatureDto;
@@ -51,6 +52,7 @@ class AbstractUnleashTest {
 
 
     protected YamlConfigurationParser yamlConfigurationParser = new YamlConfigurationParser();
+    protected UnleashConfigCollector unleashConfigCollector;
     protected UnleashClient unleashClient;
     protected UnleashAgent unleashAgent;
     protected UnleashSessionManager sessionManager;
@@ -73,7 +75,8 @@ class AbstractUnleashTest {
     AbstractUnleashTest() {
         unleashClient = new UnleashClientFactory().buildClient("http://" + unleashContainer.getHost() + ":4242");
         sessionManager = new UnleashSessionManager(unleashClient, "admin", "unleash4all");
-        unleashAgent = new UnleashAgent(new SynchronizerFactory(unleashClient, sessionManager).buildUpdaters());
+        unleashConfigCollector = new UnleashConfigCollector(unleashClient, sessionManager, yamlConfigurationParser);
+        unleashAgent = new UnleashAgent(new SynchronizerFactory(unleashClient, sessionManager).buildUpdaters(), unleashConfigCollector);
     }
 
     @BeforeEach

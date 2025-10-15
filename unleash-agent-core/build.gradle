@@ -17,9 +17,6 @@ dependencies {
     api "io.github.openfeign:feign-core:${Versions.feign}"
     api "io.github.openfeign:feign-jackson:${Versions.feign}"
     implementation "com.cedarsoftware:java-util:${Versions.cedarJavaUtils}"
-    implementation 'org.mapstruct:mapstruct:1.6.3'
-    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
     compileOnly "org.projectlombok:lombok:${Versions.lombok}"
     annotationProcessor "org.projectlombok:lombok:${Versions.lombok}"

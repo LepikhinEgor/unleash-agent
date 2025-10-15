@@ -20,7 +20,7 @@ public class ContextFieldSynchronizer {
     private final UnleashClient unleashClient;
     private final UnleashSessionManager unleashSessionManager;
 
-    private final List<String> defaultContextFields =
+    public static final List<String> defaultContextFields =
             List.of("appName", "currentTime", "environment", "sessionId", "userId");
 
     public boolean synchronize(UnleashConfiguration newConfiguration) {

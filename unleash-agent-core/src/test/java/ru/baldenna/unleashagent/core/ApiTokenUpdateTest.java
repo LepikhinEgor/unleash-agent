@@ -34,7 +34,6 @@ public class ApiTokenUpdateTest extends AbstractUnleashTest {
     @Test
     public void shouldUpdateApiToken_whenExpiresAtChanged() throws IOException {
         // given
-
         unleashClient.createApiToken(new CreateApiTokenRequest(
                 "2099-01-01T00:00:00+00:00", "client", "development",
                 "default", List.of("default"), "test-api-token"

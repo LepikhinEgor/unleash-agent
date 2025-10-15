@@ -1,6 +1,7 @@
 package ru.baldenna.unleashagent.core;
 
 import lombok.RequiredArgsConstructor;
+import ru.baldenna.unleashagent.core.common.UnleashConfigCollector;
 import ru.baldenna.unleashagent.core.common.UnleashSynchronizers;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 
@@ -8,6 +9,7 @@ import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
 public class UnleashAgent {
 
     private final UnleashSynchronizers updaters;
+    private final UnleashConfigCollector configCollector;
 
     public boolean synchronizeConfiguration(UnleashConfiguration unleashConfiguration) {
         var success = true;
@@ -29,6 +31,10 @@ public class UnleashAgent {
         }
 
         return success;
+    }
+
+    public String pullConfiguration() {
+        return configCollector.pullConfigurationInYaml();
     }
 
 }
