@@ -1,10 +1,12 @@
 package ru.baldenna.unleashagent.core;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 public class TagUpdateTest extends AbstractUnleashTest {
 
@@ -22,6 +24,20 @@ public class TagUpdateTest extends AbstractUnleashTest {
         assertThat(actualTags).hasSize(1);
         assertThat(actualTags.getFirst().type()).isEqualTo("simple");
         assertThat(actualTags.getFirst().value()).isEqualTo("test-tag");
+    }
+
+    @Test
+    public void shouldDoNothing_whenSynchronizationCalledSecondTime() {
+        // given
+        var configuration = parseUnleashConfigFile("OneTagConfig.yaml");
+
+        // when
+        unleashAgent.synchronizeConfiguration(configuration);
+        unleashAgent.synchronizeConfiguration(configuration);
+
+        // then
+        Mockito.verify(unleashClient, Mockito.times(1)).createTag(any(), any());
+        Mockito.verify(unleashClient, Mockito.times(0)).deleteTag(any(), any(), any());
     }
 
     @Test

@@ -4,7 +4,6 @@ import ru.baldenna.unleashagent.core.segments.model.FeatureConstraint;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public record Strategy(
@@ -12,14 +11,13 @@ public record Strategy(
         String name,
         String title,
         boolean disabled,
-        int sortOrder,
         List<FeatureConstraint> constraints,
         List<Variant> variants,
-        Map<String, Object> parameters,
+        StrategyParameters parameters,
         List<Integer> segments) {
 
     public Strategy copyWithId(String id) {
-        return new Strategy(id, name, title, disabled, sortOrder, constraints, variants, parameters, segments);
+        return new Strategy(id, name, title, disabled, constraints, variants, parameters, segments);
     }
 
     @Override

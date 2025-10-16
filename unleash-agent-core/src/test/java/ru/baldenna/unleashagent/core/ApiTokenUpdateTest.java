@@ -1,6 +1,7 @@
 package ru.baldenna.unleashagent.core;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import ru.baldenna.unleashagent.core.apitokens.model.CreateApiTokenRequest;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 public class ApiTokenUpdateTest extends AbstractUnleashTest {
 
@@ -29,6 +31,21 @@ public class ApiTokenUpdateTest extends AbstractUnleashTest {
         assertThat(tokens.get(0).environment()).isEqualTo("development");
         assertThat(tokens.get(0).project()).isEqualTo("default");
         assertThat(tokens.get(0).projects()).isEqualTo(List.of("default"));
+    }
+
+    @Test
+    public void shouldDoNothing_whenSynchronizationCalledSecondTime() {
+        // given
+        var configuration = parseUnleashConfigFile("ApiTokenConfig.yaml");
+
+        // when
+        unleashAgent.synchronizeConfiguration(configuration);
+        unleashAgent.synchronizeConfiguration(configuration);
+
+        // then
+        Mockito.verify(unleashClient, Mockito.times(1)).createApiToken(any(), any());
+        Mockito.verify(unleashClient, Mockito.times(0)).updateApiToken(any(), any(), any());
+        Mockito.verify(unleashClient, Mockito.times(0)).deleteApiToken(any(), any());
     }
 
     @Test

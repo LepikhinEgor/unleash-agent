@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
+import ru.baldenna.unleashagent.core.features.model.Feature;
 import ru.baldenna.unleashagent.core.projects.ProjectEnvironment;
 import ru.baldenna.unleashagent.core.strategies.model.Strategy;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.baldenna.unleashagent.core.utils.CompareUtils.deepCompare;
 
@@ -51,7 +55,7 @@ public class StrategySynchronizer {
                                 .filter(remoteStrategy -> remoteStrategy.name().equals(localStrategy.name()))
                                 .findFirst()
                                 .orElseThrow();
-                        if (!isStrategyEquals(localStrategy, existingStrategy, feature)) {
+                        if (!isStrategyEquals(localStrategy, existingStrategy)) {
                             log.info("Strategy {} with in feature {} needs to be updated",
                                     localStrategy.name(), feature);
                             strategiesToUpdate.add(localStrategy.copyWithId(existingStrategy.id()));
@@ -91,6 +95,17 @@ public class StrategySynchronizer {
                         deleteStrategy(project, feature, environmentConfiguration.name(), strategy.id())
                 );
             });
+            var remoteStrategies = unleashClient.getFeatures(project, unleashSessionManager.getSessionCookie()).features().stream()
+                    .map(feature -> Map.entry(feature.name(), unleashClient.getFeatureStrategies(project, feature.name(), environmentConfiguration.name(), unleashSessionManager.getSessionCookie())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+
+            remoteStrategies.forEach((feature, strategies) -> {
+                if (!environmentConfiguration.featureStrategies().containsKey(feature)) {
+                    remoteStrategies.get(feature).forEach(localMissedStrategy ->
+                            deleteStrategy(project, feature, environmentConfiguration.name(), localMissedStrategy.id()));
+                }
+            });
 
         } catch (Exception e) {
             log.warn("Error while strategies synchronization", e);
@@ -102,8 +117,8 @@ public class StrategySynchronizer {
         return true;
     }
 
-    private boolean isStrategyEquals(Strategy localStrategy, Strategy existingStrategy, String feature) {
-        return deepCompare(localStrategy, existingStrategy);
+    private boolean isStrategyEquals(Strategy localStrategy, Strategy existingStrategy) {
+        return deepCompare(localStrategy.copyWithId(existingStrategy.id()), existingStrategy);
     }
 
     private void addFeatureStrategy(String projectId, String featureName, String environment, Strategy strategy) {
@@ -131,9 +146,11 @@ public class StrategySynchronizer {
     }
 
     private void deleteStrategy(String projectId, String featureName, String environment, String strategyId) {
-        unleashClient.deleteFeatureStrategy(projectId,
+        unleashClient.deleteFeatureStrategy(
+                projectId,
                 featureName,
                 environment,
-                strategyId, unleashSessionManager.getSessionCookie());
+                strategyId,
+                unleashSessionManager.getSessionCookie());
     }
 }

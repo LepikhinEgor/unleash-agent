@@ -3,12 +3,14 @@ package ru.baldenna.unleashagent.core;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import ru.baldenna.unleashagent.core.segments.model.Segment;
 import ru.baldenna.unleashagent.core.segments.model.FeatureConstraint;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 public class SegmentUpdateTest extends AbstractUnleashTest {
 
@@ -24,6 +26,21 @@ public class SegmentUpdateTest extends AbstractUnleashTest {
         var actualSegments = getUnleashSegments();
 
         assertSegmentsSynchronized(actualSegments);
+    }
+
+    @Test
+    public void shouldDoNothing_whenSynchronizationCalledSecondTime() {
+        // given
+        var configuration = parseUnleashConfigFile("OneSegmentConfig.yaml");
+
+        // when
+        unleashAgent.synchronizeConfiguration(configuration);
+        unleashAgent.synchronizeConfiguration(configuration);
+
+        // then
+        Mockito.verify(unleashClient, Mockito.times(1)).createSegment(any(), any());
+        Mockito.verify(unleashClient, Mockito.times(0)).updateSegment(any(), any(), any());
+        Mockito.verify(unleashClient, Mockito.times(0)).deleteSegment(any(), any());
     }
 
     @ParameterizedTest

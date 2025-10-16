@@ -4,6 +4,7 @@ import ru.baldenna.unleashagent.core.UnleashAgent;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
 import ru.baldenna.unleashagent.core.common.SynchronizerFactory;
+import ru.baldenna.unleashagent.core.common.UnleashConfigCollector;
 import ru.baldenna.unleashagent.core.configuration.YamlConfigurationParser;
 
 import java.nio.file.Files;
@@ -28,8 +29,9 @@ public class UnleashAgentCli {
         var unleashSessionManager = new UnleashSessionManager(unleashClient, cliArgs.unleashLogin(), cliArgs.unleashPassword());
 
         SynchronizerFactory synchronizerFactory = new SynchronizerFactory(unleashClient, unleashSessionManager);
+        UnleashConfigCollector configCollector = new UnleashConfigCollector(unleashClient, unleashSessionManager, yamlParser);
 
-        UnleashAgent unleashAgent = new UnleashAgent(synchronizerFactory.buildUpdaters());
+        UnleashAgent unleashAgent = new UnleashAgent(synchronizerFactory.buildUpdaters(), configCollector);
 
         System.out.println("Start synchronization for unleash " + cliArgs.unleashUrl());
         var success = unleashAgent.synchronizeConfiguration(newUnleashConfiguration);

@@ -1,6 +1,7 @@
 package ru.baldenna.unleashagent.core;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -73,7 +74,7 @@ class AbstractUnleashTest {
     }
 
     AbstractUnleashTest() {
-        unleashClient = new UnleashClientFactory().buildClient("http://" + unleashContainer.getHost() + ":4242");
+        unleashClient = Mockito.spy(new UnleashClientFactory().buildClient("http://" + unleashContainer.getHost() + ":4242"));
         sessionManager = new UnleashSessionManager(unleashClient, "admin", "unleash4all");
         unleashConfigCollector = new UnleashConfigCollector(unleashClient, sessionManager, yamlConfigurationParser);
         unleashAgent = new UnleashAgent(new SynchronizerFactory(unleashClient, sessionManager).buildUpdaters(), unleashConfigCollector);
@@ -107,6 +108,7 @@ class AbstractUnleashTest {
                 unleashClient.deleteApiToken(apiToken.secret(), sessionManager.getSessionCookie())
         );
 
+        Mockito.reset(unleashClient);
     }
 
     protected List<TagType> getTagTypes() {

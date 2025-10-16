@@ -7,6 +7,7 @@ import ru.baldenna.unleashagent.core.UnleashAgent;
 import ru.baldenna.unleashagent.core.auth.UnleashSessionManager;
 import ru.baldenna.unleashagent.core.client.UnleashClient;
 import ru.baldenna.unleashagent.core.client.UnleashClientFactory;
+import ru.baldenna.unleashagent.core.common.UnleashConfigCollector;
 import ru.baldenna.unleashagent.core.common.UnleashSynchronizers;
 import ru.baldenna.unleashagent.core.common.SynchronizerFactory;
 import ru.baldenna.unleashagent.core.configuration.UnleashConfiguration;
@@ -44,8 +45,15 @@ public class UnleashAgentAutoConfiguration {
     }
 
     @Bean
-    UnleashAgent unleashAgent(UnleashSynchronizers unleashSynchronizers) {
-        return new UnleashAgent(unleashSynchronizers);
+    UnleashConfigCollector unleashUpdaters(UnleashClient unleashClient,
+                                           UnleashSessionManager unleashSessionManager,
+                                           YamlConfigurationParser yamlConfigurationParser) {
+        return new UnleashConfigCollector(unleashClient, unleashSessionManager, yamlConfigurationParser);
+    }
+
+    @Bean
+    UnleashAgent unleashAgent(UnleashSynchronizers unleashSynchronizers, UnleashConfigCollector configCollector) {
+        return new UnleashAgent(unleashSynchronizers, configCollector);
     }
 
     @Bean

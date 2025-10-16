@@ -41,7 +41,7 @@ public class UnleashConfigCollector {
                     var projectEnvironments = unleashClient.getProjectEnvironments(p.name(), session).environments().stream()
                             .map(environment -> {
                                 var featureStrategies = features.features().stream()
-                                        .map(feature -> Map.entry(feature.name(),unleashClient.getFeatureStrategies(p.name(), feature.name(), environment.name(), session)))
+                                        .map(feature -> Map.entry(feature.name(), unleashClient.getFeatureStrategies(p.name(), feature.name(), environment.name(), session)))
                                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                                 return new ProjectEnvironment(environment.name(), featureStrategies);
                             })

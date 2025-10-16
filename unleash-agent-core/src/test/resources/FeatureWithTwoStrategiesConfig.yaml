@@ -1,0 +1,103 @@
+contextFields:
+  - name: tariff
+    description: Customer tariff
+    stickiness: false
+    sortOrder: 1
+    legalValues:
+      - { value: FREE, description: Free plan }
+      - { value: PRO, description: Pro plan }
+      - { value: ULTIMATE, description: Ultimate plan }
+      - { value: VIP, description: Vip client }
+  - name: age
+    description: Customer age
+    stickiness: false
+    sortOrder: 2
+segments:
+  - name: "beta-testers"
+    description: "Beta testers which test unreleased features"
+    constraints:
+      - contextName: "userId"
+        operator: "IN"
+        caseInsensitive: true
+        inverted: false
+        values:
+          - "user1"
+          - "user2"
+          - "user3"
+          - "user4"
+          - "user5"
+projects:
+  default:
+    features:
+      - name: ifelse-feature
+        type: release
+        description: Unknown
+      - name: beans-feature
+        type: release
+        description: This is feature 2
+      - name: variants-feature
+        type: release
+        description: Variants based feature
+    environments:
+      - name: development
+        featureStrategies:
+          variants-feature:
+            - name: flexibleRollout
+              title: "New title"
+              constraints:
+                - contextName: age
+                  value: 40
+                  inverted: false
+                  operator: NUM_GTE
+                  caseInsensitive: true
+                - contextName: tariff
+                  values:
+                    - ULTIMATE
+                    - VIP
+                  inverted: false
+                  operator: IN
+                  caseInsensitive: true
+              parameters:
+                rollout: "100"
+                stickiness: "default"
+                groupId: "variants-feature"
+              variants:
+                - name: "firstVariant"
+                  stickiness: "default"
+                  weight: 200
+                  payload:
+                    type: "string"
+                    value: "testFirst"
+                  weightType: "fix"
+                - name: "secondVariant"
+                  stickiness: "default"
+                  weight: 500
+                  payload:
+                    type: "string"
+                    value: "testSecond"
+                  weightType: "fix"
+                - name: "thirdVariant"
+                  stickiness: "default"
+                  weight: 300
+                  payload:
+                    type: "string"
+                    value: "testThird"
+                  weightType: "variable"
+              segments: []
+              disabled: false
+          ifelse-feature:
+            - name: flexibleRollout
+              title: null
+              constraints:
+                - contextName: age
+                  value: 40
+                  inverted: false
+                  operator: NUM_GTE
+                  caseInsensitive: true
+              parameters:
+                rollout: "100"
+                stickiness: "default"
+                groupId: "feature78"
+              variants: []
+              segments: []
+              disabled: false

@@ -9,6 +9,7 @@ import ru.baldenna.unleashagent.core.apitokens.model.ApiToken;
 import ru.baldenna.unleashagent.core.apitokens.model.CreateApiTokenRequest;
 import ru.baldenna.unleashagent.core.apitokens.model.UpdateApiTokenRequest;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 @Slf4j
@@ -43,8 +44,8 @@ public class ApiTokenSynchronizer {
                     tokensToCreate.add(local);
                 } else {
                     var remote = maybeRemote.get();
-                    if (!equals(local.expiresAt(), remote.expiresAt())) {
-                        log.info("API secret {} exists but expiresAt differs and needs update", local.tokenName());
+                    if (!equals(ZonedDateTime.parse(local.expiresAt()), ZonedDateTime.parse(remote.expiresAt()))) {
+                        log.info("API secret {} exists but expiresAt differs({}->{}) and needs update", local.tokenName(), local.expiresAt(), remote.expiresAt());
                         tokensToUpdate.add(local.withSecret(remote.secret()));
                     } else {
                         log.debug("API secret {} already exists and is up to date", local.tokenName());
