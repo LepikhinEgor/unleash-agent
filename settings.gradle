@@ -1,3 +1,14 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        maven { url 'http://binary/artifactory/plugins-release'; allowInsecureProtocol = true }
+        maven { url 'http://binary/artifactory/gradleplugins'; allowInsecureProtocol = true }
+        maven { url 'http://binary/artifactory/releases-virtual'; allowInsecureProtocol = true }
+        maven { url 'http://binary/artifactory/public'; allowInsecureProtocol = true }
+        maven { url 'http://binary/artifactory/libs-release-local'; allowInsecureProtocol = true }
+    }
+}
+
 rootProject.name = 'unleash-agent'
 
 include 'unleash-agent-core'

@@ -1,15 +1,26 @@
 plugins {
-    id 'java'
-    id 'java-library'
-    id 'checkstyle'
-    id 'jacoco'
+    id("ru.alfalab.library-configurer")
 }
 
-group = 'ru.baldenna'
-version = '0.0.1-SNAPSHOT'
+group = "ru.alfabank.microservices.dfa"
+version = project.version
 
 repositories {
     mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+libraryConfigurer {
+    dependencyPack
+            .base()
+            .library()
 }
 
 dependencies {
@@ -39,9 +50,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.20.0'
 }
 
-checkstyle {
-    toolVersion = '11.0.0'
-}
 
 jacocoTestReport {
     dependsOn test

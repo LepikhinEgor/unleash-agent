@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-ru.baldenna.unleashagent.starter.UnleashAgentAutoConfiguration
+ru.alfabank.dfa.unleash.agent.unleashagent.starter.UnleashAgentAutoConfiguration
