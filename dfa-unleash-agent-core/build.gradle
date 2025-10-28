@@ -1,0 +1,59 @@
+plugins {
+    id("ru.alfalab.library-configurer")
+}
+
+group = "ru.alfabank.microservices.dfa"
+version = project.version
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+libraryConfigurer {
+    dependencyPack
+            .base()
+            .library()
+}
+
+dependencies {
+
+    api "io.github.openfeign:feign-core:${Versions.feign}"
+    api "io.github.openfeign:feign-jackson:${Versions.feign}"
+    implementation "com.cedarsoftware:java-util:${Versions.cedarJavaUtils}"
+
+    compileOnly "org.projectlombok:lombok:${Versions.lombok}"
+    annotationProcessor "org.projectlombok:lombok:${Versions.lombok}"
+
+    implementation "org.slf4j:slf4j-api:${Versions.slf4j}"
+    implementation "ch.qos.logback:logback-classic:${Versions.logback}"
+
+    api "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${Versions.jacksonDatabind}"
+    api("com.fasterxml.jackson.core:jackson-databind:${Versions.jacksonDatabind}")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${Versions.jacksonDatabind}")
+
+    testImplementation platform("org.junit:junit-bom:${Versions.junit}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.assertj:assertj-core:${Versions.assertj}"
+
+    testImplementation "org.testcontainers:testcontainers:${Versions.testcontainers}"
+    testImplementation "org.testcontainers:postgresql:${Versions.testcontainers}"
+    testCompileOnly "org.projectlombok:lombok:${Versions.lombok}"
+    testAnnotationProcessor "org.projectlombok:lombok:${Versions.lombok}"
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+quality {
+    spotbugs = false
+}

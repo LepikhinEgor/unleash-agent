@@ -9,9 +9,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'unleash-agent'
+rootProject.name = 'dfa-unleash-agent'
 
-include 'unleash-agent-core'
-include 'unleash-agent-cli'
-include 'unleash-agent-spring-starter'
-include 'unleash-agent-spring-example'
+include 'dfa-unleash-agent-core'
+include 'dfa-unleash-agent-spring-starter'
+include 'dfa-unleash-agent-app'

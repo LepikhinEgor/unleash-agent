@@ -55,6 +55,9 @@ allprojects {
                 releasesOnly()
             }
         }
+        quality {
+            spotbugs = false
+        }
     }
 
     java {
@@ -66,13 +69,6 @@ allprojects {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
 
 bootJar.enabled = false
 

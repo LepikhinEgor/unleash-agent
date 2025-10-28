@@ -1,0 +1,128 @@
+package ru.alfabank.dfa.unleash.agent.contextfields;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.alfabank.dfa.unleash.agent.auth.UnleashSessionManager;
+import ru.alfabank.dfa.unleash.agent.client.UnleashClient;
+import ru.alfabank.dfa.unleash.agent.configuration.UnleashConfiguration;
+import ru.alfabank.dfa.unleash.agent.contextfields.model.ContextField;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static ru.alfabank.dfa.unleash.agent.utils.CompareUtils.deepCompare;
+
+
+@Slf4j
+@RequiredArgsConstructor
+public class ContextFieldSynchronizer {
+
+    public static final List<String> DEFAULT_CONTEXT_FIELDS =
+            List.of("appName", "currentTime", "environment", "sessionId", "userId");
+
+    private final UnleashClient unleashClient;
+    private final UnleashSessionManager unleashSessionManager;
+
+    public boolean synchronize(UnleashConfiguration newConfiguration) {
+        try {
+            log.info("Check unleash context fields for update");
+            var remoteContextFields = unleashClient.getContextFields(unleashSessionManager.getSessionCookie());
+            var localContextFields = newConfiguration.contextFields();
+
+            var contextFieldsToCreate = new ArrayList<ContextField>();
+            var contextFieldsToUpdate = new ArrayList<ContextField>();
+            var contextFieldsToDelete = new ArrayList<ContextField>();
+
+            for (ContextField localContextField : localContextFields) {
+                var existingContextField = remoteContextFields.stream()
+                        .filter(remoteContextField -> remoteContextField.name().equals(localContextField.name()))
+                        .findFirst();
+                if (existingContextField.isPresent()) {
+                    if (!isContextFieldsEquals(localContextField, existingContextField.get())) {
+                        log.info("Context field {} with name {} needs to be updated",
+                                localContextField.name(), localContextField.name());
+                        contextFieldsToUpdate.add(localContextField);
+                    } else {
+                        log.debug("Context field {} with name {} already exists and is up to date",
+                                localContextField.name(), localContextField.name());
+                    }
+                } else {
+                    log.info("Context field {} with name {} not found in Unleash and needs to be created",
+                            localContextField.name(), localContextField.name());
+                    contextFieldsToCreate.add(localContextField);
+                }
+            }
+
+            for (ContextField remoteContextField : remoteContextFields) {
+                if (localContextFields.stream().noneMatch(local -> local.name().equals(remoteContextField.name()))) {
+                    if (!DEFAULT_CONTEXT_FIELDS.contains(remoteContextField.name())) {
+                        log.info("Context field {} with name {} exists in Unleash but not declared in local config."
+                                + " Context field will be deleted", remoteContextField.name(), remoteContextField.name());
+                        contextFieldsToDelete.add(remoteContextField);
+                    } else {
+                        log.debug("Default context field {} with name {} exists in Unleash "
+                                        + "but not declared in local config. Context field will not be deleted",
+                                remoteContextField.name(), remoteContextField.name());
+                    }
+                }
+            }
+
+            if (contextFieldsToCreate.size() + contextFieldsToUpdate.size() + contextFieldsToDelete.size() != 0) {
+                log.info("Context field states were compared. To create = {}, to update = {}, to delete = {}",
+                        contextFieldsToCreate.size(), contextFieldsToUpdate.size(), contextFieldsToDelete.size());
+            } else {
+                log.info("Unleash context fields are already up to date");
+            }
+
+            contextFieldsToCreate.forEach(this::createContextField);
+            contextFieldsToUpdate.forEach(this::updateContextField);
+            contextFieldsToDelete.forEach(this::deleteContextField);
+        } catch (Exception e) {
+            log.warn("Error while context fields synchronization", e);
+            log.debug(e.getMessage(), e);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isContextFieldsEquals(ContextField localContextField, ContextField remoteContextField) {
+
+       return deepCompare(localContextField, remoteContextField);
+    }
+
+    private void createContextField(ContextField contextField) {
+        try {
+            unleashClient.createContextField(contextField, unleashSessionManager.getSessionCookie());
+            log.info("Context field created: {}", contextField.name());
+        } catch (Exception e) {
+            log.warn("Error creating context field {}", contextField.name());
+            log.debug(e.getMessage(), e);
+        }
+    }
+
+    private void updateContextField(ContextField contextField) {
+        try {
+            unleashClient.updateContextField(
+                    contextField.name(),
+                    contextField,
+                    unleashSessionManager.getSessionCookie()
+            );
+            log.info("Context field updated: {}", contextField.name());
+        } catch (Exception e) {
+            log.warn("Error updating context field {}", contextField.name());
+            log.debug(e.getMessage(), e);
+        }
+    }
+
+    private void deleteContextField(ContextField contextField) {
+        try {
+            unleashClient.deleteContextField(contextField.name(), unleashSessionManager.getSessionCookie());
+            log.info("Context field deleted: {}", contextField.name());
+        } catch (Exception e) {
+            log.warn("Error deleting context field {}", contextField.name());
+            log.debug(e.getMessage(), e);
+        }
+    }
+}
